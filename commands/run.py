@@ -66,6 +66,11 @@ async def run(update: Update, context: ContextTypes) -> None:
         await update.message.reply_text("Invalid query format, please use the correct format 🥺")
         return
 
+    if query.casefold().startswith("drop database"):
+        await update.message.reply_text("You cannot drop a database pookie 🥺")
+        return
+    
+
     try:
         cursor = user_db.db.cursor()
         cursor.execute(query)

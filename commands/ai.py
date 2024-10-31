@@ -76,6 +76,8 @@ async def ai(update: Update, context: ContextTypes) -> None:
     message_text = update.message.text
     # remove the command from the message text
     message_text = message_text.replace("/ai", "")
+    if message_text.strip().replace(" ", "") == "":
+        await update.message.reply_text("Please provide a message to generate a response 😑")
 
     model = genai.GenerativeModel(
             model_name="gemini-1.5-pro",
@@ -96,6 +98,9 @@ async def ai(update: Update, context: ContextTypes) -> None:
         )
     
     response = await model.generate_content_async(message_text)
-    await update.message.reply_text(response.text.replace('.', '\\.'), parse_mode="markdownV2")
+    try:
+        await update.message.reply_text(response.text.replace('.', '\\.'), parse_mode="markdownV2")
+    except:
+        await update.message.reply_text(response.text)
     return
     

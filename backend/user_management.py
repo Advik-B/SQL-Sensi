@@ -58,9 +58,7 @@ def create_db_for_user(db: DataBase, user: User, is_admin: bool = False) -> Data
                     # None,  # Assuming gemini_api_key is None by default
                 ),
             )
-            # print(f"Created database {sql_db_name} for user {user.id} with password {password}")
-            db.create_database(sql_db_name)
-            cursor.execute(f"GRANT ALL PRIVILEGES ON {sql_db_name}.* TO '{sql_username}'@'%'")
+            cursor.execute(f"GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, EXECUTE ON {sql_db_name}.* TO '{sql_username}'@'%'") # Grant all privileges to the user on the new database
             cursor.execute("FLUSH PRIVILEGES")
         
 
