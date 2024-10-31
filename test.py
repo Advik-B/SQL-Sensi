@@ -1,5 +1,5 @@
 from backend.core import DataBase
-from backend.user_management import get_user_db
+from backend.user_management import get_user_db, init_db
 from telegram import BotCommand, Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from os import getenv as env
@@ -13,14 +13,16 @@ with db as connection:
         print(cursor.fetchall())
 
 
+init_db(db)
+
 token = env("TOKEN")
 app = Application.builder().token(token).build()
 
 async def start(update: Update, context: ContextTypes) -> None:
     # await update.message.reply_text("Hello World!")
     if update.effective_user:
-        db = get_user_db(db, update.effective_user)
-        with db as connection:
+        u_db = get_user_db(db, update.effective_user)
+        with u_db as connection:
             with connection.cursor() as cursor:
                 cursor.execute("SHOW DATABASES")
                 await update.message.reply_text(str(cursor.fetchall()))
