@@ -78,6 +78,7 @@ async def ai(update: Update, context: ContextTypes) -> None:
     message_text = message_text.replace("/ai", "")
     if message_text.strip().replace(" ", "") == "":
         await update.message.reply_text("Please provide a message to generate a response 😑")
+        return
 
     model = genai.GenerativeModel(
             model_name="gemini-1.5-pro",
