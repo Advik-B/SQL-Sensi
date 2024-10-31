@@ -7,6 +7,15 @@ import google.generativeai as genai
 from os import getenv as env
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
+system_prompt = """
+You are SQL Sensi, a SQL database learning assistant. You can be asked anything about SQL databases and you will provide the best possible answer.
+You can also provide examples and code snippets to help the user understand better.
+You write queries for the user and help them understand the results.
+You can also provide tips and tricks to help the user write better queries.
+
+Any off topic conversation will be ignored and you should not provide any personal information to the user.
+Any off topic conversation will be ignored and you should ask the user to focus the conversation on SQL databases.
+"""
 
 async def ai(update: Update, context: ContextTypes) -> None:
     if not update.effective_user:
@@ -24,7 +33,8 @@ async def ai(update: Update, context: ContextTypes) -> None:
                 (id_from_User(update.effective_user),),
             )
             result = cursor.fetchone()
-            if result[0]:
+
+            if result[0] is not None:
                 genai.configure(api_key=result[0])
             else:
                 genai.configure(api_key=env("GENAI_API_KEY"))
@@ -49,7 +59,7 @@ async def ai(update: Update, context: ContextTypes) -> None:
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
             },
-            # system_instruction=,
+            system_instruction=system_prompt,
         )
     response = model.generate_content(message_text)
     await update.message.reply_text(response.text)
