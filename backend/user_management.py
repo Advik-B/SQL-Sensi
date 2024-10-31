@@ -101,3 +101,13 @@ def get_user_by_id(db: DataBase, user_id: int) -> User:
                 )
             else:
                 return None
+
+def user_exists(db: DataBase, user: User) -> bool:
+    with db as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id FROM telegram.user_map WHERE id=%s",
+                (user.id,),
+            )
+            result = cursor.fetchone()
+            return bool(result)
