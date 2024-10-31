@@ -3,3 +3,4 @@ python-dotenv
 mysql-connector-python
 rich
 google-generativeai
+bcrypt
