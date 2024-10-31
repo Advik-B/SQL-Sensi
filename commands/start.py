@@ -50,6 +50,5 @@ cursor.execute("INSERT INTO test_table(id, name) VALUES (1, 'John')")
 db.commit()
 
 ```
-
 You can now connect to your database using the connection code above\\.
 """), parse_mode="MarkdownV2")
