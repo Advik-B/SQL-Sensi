@@ -89,5 +89,4 @@ def user_exists(db: DataBase, user: User) -> bool:
                 (id_from_User(user),),
             )
             result = cursor.fetchone()
-            print(result)
             return bool(result)

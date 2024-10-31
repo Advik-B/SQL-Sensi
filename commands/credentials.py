@@ -19,7 +19,10 @@ async def credentials(update: Update, context: ContextTypes) -> None:
             )
             result = cursor.fetchone()
             await update.message.reply_text(
-                    f"Username: `{result[0]}`\nPassword: `{result[1]}`\nDatabase: `{result[2]}`\nHost: `{connection.server_host}",
+                "Fetching database credentials:",
+                )
+            await update.message.reply_text(
+                    f"Username: `{result[0]}`\nPassword: `{result[1]}`\nDatabase Name: `{result[2]}`\nHost: `{connection.server_host}`",
                     parse_mode="MarkdownV2"
                 )
             
