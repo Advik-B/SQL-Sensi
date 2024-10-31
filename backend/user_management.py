@@ -2,6 +2,7 @@ from .core import DataBase
 from bcrypt import hashpw, gensalt
 from telegram import User
 from os import getenv as env
+from .misc import id_from_User, dbname_from_User
 
 def init_db(db: DataBase) -> None:
     db.create_database("telegram")
@@ -26,13 +27,12 @@ def init_db(db: DataBase) -> None:
                 """
             )
 
-
 def create_db_for_user(db: DataBase, user: User, is_admin: bool = False) -> DataBase:
     with db as connection:
         with connection.cursor() as cursor:
             salt = gensalt()
-            sql_username = f"u{user.id}"
-            sql_db_name = f"u_{user.id}"
+            sql_username = id_from_User(user)
+            sql_db_name = dbname_from_User(user)
             password = hashpw(str(user.id).encode(), salt).decode()[:20] # Only the first 10 characters
             db.create_database(sql_db_name)
             # Grant all privileges to the user on the new database
@@ -66,11 +66,10 @@ def create_db_for_user(db: DataBase, user: User, is_admin: bool = False) -> Data
 
             return DataBase(user=sql_username, password=password, db_name=sql_db_name)
 
-
 def get_user_db(db: DataBase, user: User) -> DataBase:
     with db as connection:
         with connection.cursor() as cursor:
-            sql_username = f"u{user.id}"
+            sql_username = id_from_User(user)
             cursor.execute(
                 "SELECT sql_username, sql_password, sql_db_name FROM telegram.user_map WHERE sql_username=%s",
                 ( sql_username,),
@@ -82,32 +81,13 @@ def get_user_db(db: DataBase, user: User) -> DataBase:
             else:
                 return create_db_for_user(db, user)
 
-
-def get_user_by_id(db: DataBase, user_id: int) -> User:
-    with db as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT id, username, first_name, last_name, language_code FROM telegram.user_map WHERE id=%s",
-                (user_id,),
-            )
-            result = cursor.fetchone()
-            if result:
-                return User(
-                    id=result[0],
-                    username=result[1],
-                    first_name=result[2],
-                    last_name=result[3],
-                    language_code=result[4],
-                )
-            else:
-                return None
-
 def user_exists(db: DataBase, user: User) -> bool:
     with db as connection:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT id FROM telegram.user_map WHERE id=%s",
-                (user.id,),
+                "SELECT id FROM telegram.user_map WHERE sql_username=%s",
+                (id_from_User(user),),
             )
             result = cursor.fetchone()
+            print(result)
             return bool(result)

@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from backend.core import db
 from backend.user_management import user_exists
+from backend.misc import id_from_User
 
 async def credentials(update: Update, context: ContextTypes) -> None:
     if not update.effective_user:
@@ -13,8 +14,8 @@ async def credentials(update: Update, context: ContextTypes) -> None:
     with db as connection:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT sql_username, sql_password, sql_db_name FROM telegram.user_map WHERE id=%s",
-                (update.effective_user.id,),
+                "SELECT sql_username, sql_password, sql_db_name FROM telegram.user_map WHERE sql_username=%s",
+                (id_from_User(update.effective_user),),
             )
             result = cursor.fetchone()
             await update.message.reply_text(
