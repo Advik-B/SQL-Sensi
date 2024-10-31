@@ -29,3 +29,6 @@ class DataBase:
         with self.db.cursor() as cursor:
             cursor.execute(f"DROP DATABASE {name}")
         self.last_database = None if self.last_database == name else self.last_database
+
+
+db: DataBase = DataBase() # This is the database object that will be used throughout the application and will be shared across modules

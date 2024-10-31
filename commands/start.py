@@ -1,23 +1,14 @@
-from backend.core import DataBase
-from backend.user_management import get_user_db, init_db
-from telegram import BotCommand, Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from backend.user_management import get_user_db
+from backend.core import db
+
+
+from telegram import Update
+from telegram.ext import ContextTypes
+
+
 from os import getenv as env
 from textwrap import dedent
 
-db = DataBase()
-db.create_database("test")
-
-with db as connection:
-    with connection.cursor() as cursor:
-        cursor.execute("SHOW DATABASES")
-        print(cursor.fetchall())
-
-
-init_db(db)
-
-token = env("TOKEN")
-app = Application.builder().token(token).build()
 
 async def start(update: Update, context: ContextTypes) -> None:
     # await update.message.reply_text("Hello World!")
@@ -62,17 +53,3 @@ db.commit()
 
 You can now connect to your database using the connection code above\\.
 """), parse_mode="MarkdownV2")
-
-    
-        
-
-
-# app.bot.set_my_commands(
-#     [
-#         BotCommand("start", "Start the bot"),
-#     ]
-# )
-
-app.add_handler(CommandHandler("start", start))
-
-app.run_polling()
