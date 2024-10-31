@@ -1,6 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from backend.core import db
+from backend.user_management import user_exists
 from backend.misc import id_from_User
 import google.generativeai as genai
 from os import getenv as env
