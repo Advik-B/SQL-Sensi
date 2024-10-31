@@ -99,6 +99,3 @@ async def ai(update: Update, context: ContextTypes) -> None:
     await update.message.reply_text(response.text.replace('.', '\\.'), parse_mode="markdownV2")
     return
     
-
-
-async def ai_run
