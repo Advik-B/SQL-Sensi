@@ -17,7 +17,5 @@ create_table(conn, "test_table", {"name": "VARCHAR(255)", "age": "INT"})
 
 # Run the desc command.
 cursor = conn.cursor()
-cursor.execute("DESC test_table")
+cursor.execute("DEx SC test_table;")
 print(cursor.fetchall())
-cursor.close()
-conn.close()
