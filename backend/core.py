@@ -4,11 +4,12 @@ from mysql.connector.errors import ProgrammingError
 from os import getenv as env
 
 class DataBase:
-    def __init__(self, host: str = None, user: str = None, password: str = None) -> None:
+    def __init__(self, host: str = None, user: str = None, password: str = None, db_name:str = None) -> None:
         self.db = connect(
             host=host or env("SQL_HOST"),
             user=user or env("SQL_USER"),
             password=password or env("SQL_PASSWORD"),
+            database=db_name
         )
         self.last_database: str = None
 
