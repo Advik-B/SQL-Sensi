@@ -1,21 +1,37 @@
-from backend.create_db import create_db, create_table
-from mysql.connector import connect
-
-
+from backend.core import DataBase
+from backend.user_management import get_user_db
+from telegram import BotCommand, Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 from os import getenv as env
-conn = connect(
-    host=env("SQL_HOST"),
-    user=env("SQL_USER"),
-    password=env("SQL_PASSWORD")
-)
 
-create_db(conn, "test_db")
-conn.cursor().execute("USE test_db;")
-conn.commit()
-create_table(conn, "test_table", {"name": "VARCHAR(255)", "age": "INT"})
+db = DataBase()
+db.create_database("test")
+
+with db as connection:
+    with connection.cursor() as cursor:
+        cursor.execute("SHOW DATABASES")
+        print(cursor.fetchall())
 
 
-# Run the desc command.
-cursor = conn.cursor()
-cursor.execute("DEx SC test_table;")
-print(cursor.fetchall())
+token = env("TOKEN")
+app = Application.builder().token(token).build()
+
+async def start(update: Update, context: ContextTypes) -> None:
+    # await update.message.reply_text("Hello World!")
+    if update.effective_user:
+        db = get_user_db(db, update.effective_user)
+        with db as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SHOW DATABASES")
+                await update.message.reply_text(str(cursor.fetchall()))
+
+
+# app.bot.set_my_commands(
+#     [
+#         BotCommand("start", "Start the bot"),
+#     ]
+# )
+
+app.add_handler(CommandHandler("start", start))
+
+app.run_polling()
