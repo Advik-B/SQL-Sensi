@@ -4,9 +4,6 @@ from backend.core import db
 
 from telegram import Update
 from telegram.ext import ContextTypes
-
-
-from os import getenv as env
 from textwrap import dedent
 
 
@@ -35,7 +32,7 @@ Connection code:
 ```python
 import mysql.connector
 db = mysql.connector.connect(
-    host="{env("SQL_HOST")}",
+    host="{connection.server_host}",
     user="{result[0]}",
     password="{result[1]}",
     database="{result[2]}"
