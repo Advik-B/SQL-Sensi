@@ -78,6 +78,8 @@ async def run(update: Update, context: ContextTypes) -> None:
             for i in range(0, len(message_text), MAX_MESSAGE_LENGTH):
                 await update.message.reply_text(wrap_code(message_text[i:i + MAX_MESSAGE_LENGTH]), parse_mode="MarkdownV2")
             return
+        if final_text.replace("\n", "").strip().replace(" ", "").replace("```", "").replace("\t", "") == "":
+            final_text = "Query executed successfully, but no results were returned ✅"
         await update.message.reply_text(final_text, parse_mode="MarkdownV2")
     except mysql.connector.errors.ProgrammingError as e:
         await update.message.reply_text(f"Error 💀: ```\n{e}\n```", parse_mode="MarkdownV2")
