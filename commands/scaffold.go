@@ -2,15 +2,15 @@ package commands
 
 import (
 	"log"
+
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-
 type Command struct {
-	Name string
+	Name        string
 	Description string
-	Handler func(*telegram.BotAPI, *telegram.Message)
-	Usage string
+	Handler     func(*telegram.BotAPI, *telegram.Message)
+	Usage       string
 }
 
 var Commands = []Command{}
@@ -26,8 +26,16 @@ func (c Command) String() string {
 	return str
 }
 
-func RegisterCommand(command Command) {
+func Register(command Command) {
 	log.Printf("Registering command %v", command)
 	Commands = append(Commands, command)
 }
 
+func Handle(bot *telegram.BotAPI, message *telegram.Message) {
+	for _, command := range Commands {
+		if message.IsCommand() && message.Command() == command.Name {
+			command.Invoke(bot, message)
+			return
+		}
+	}
+}
