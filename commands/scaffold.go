@@ -29,11 +29,12 @@ func Register(command Command) {
 
 func Handle(bot *telegram.BotAPI, message *telegram.Message) {
 	for _, command := range Commands {
-		log.Printf("Checking command %s", command)
 		if message.Command() == command.Name {
 			log.Printf("Invoking command %s", command.Name)
 			command.Handler(bot, message)
 			return
 		}
 	}
+	log.Printf("Command %s not found", message.Command())
+	bot.Send(telegram.NewMessage(message.Chat.ID, "Command not found. Use /help to see all available commands."))
 }
