@@ -25,16 +25,6 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
-	commands.Register(commands.Command{
-		Name:        "start",
-		Description: "Start the bot for the first time",
-		Handler: func(bot *telegram.BotAPI, message *telegram.Message) {
-			msg := telegram.NewMessage(message.Chat.ID, "Hello! I'm a bot that can help you with your daily tasks. Use /help to see all available commands.")
-			bot.Send(msg)
-		},
-		Usage: "/start",
-	})
-
 	for update := range updates {
 		switch {
 		case update.Message == nil:
