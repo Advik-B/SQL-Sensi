@@ -24,6 +24,7 @@ func help(bot *telegram.BotAPI, message *telegram.Message) {
 			msg.Text = fmt.Sprintf("Command %s not found", message.CommandArguments())
 		}
 	}
+	bot.Send(msg)
 }
 
 func HelpCommand() Command {
