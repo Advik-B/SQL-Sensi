@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"os"
-
+	"sql.sensi/commands"
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	env "github.com/joho/godotenv"
 )
@@ -16,8 +16,6 @@ func main() {
 		log.Panic(err)
 	}
 
-	bot.Debug = false
-
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	u := telegram.NewUpdate(0)
@@ -25,28 +23,27 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
+	commands.RegisterCommand(commands.Command{
+		Name: "start",
+		Description: "Start the bot for the first time",
+		Handler: func(bot *telegram.BotAPI, message *telegram.Message) {
+			msg := telegram.NewMessage(message.Chat.ID, "Hello! I'm a bot that can help you with your daily tasks. Use /help to see all available commands.")
+			bot.Send(msg)
+		},
+		Usage: "/start",
+	})
+
+
 	for update := range updates {
 		switch {
 		case update.Message == nil:
 			continue
 		case update.Message.IsCommand():
-			msg := telegram.NewMessage(update.Message.Chat.ID, "")
-			switch update.Message.Command() {
-			case "start":
-				msg.Text = "Hello! I'm a bot that can help you with your daily tasks. Use /help to see all available commands."
-			case "help":
-				msg.Text = "Available commands:\n\n" +
-					"/start - Start the bot\n" +
-					"/help - Show all available commands\n" +
-					"/ping - Check if the bot is alive\n"
-				
-			case "ping":
-				msg.Text = "Pong!"
-			default:
-				msg.Text = "I don't know that command"
-			
+			for _, command := range commands.Commands {
+				if update.Message.Command() == command.Name {
+					command.Invoke(bot, update.Message)
+				}
 			}
-			bot.Send(msg)
 		}
 	}
 }
