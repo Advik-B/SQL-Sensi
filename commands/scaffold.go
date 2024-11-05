@@ -15,10 +15,6 @@ type Command struct {
 
 var Commands = []Command{}
 
-// Invoke method to execute the command
-func (c Command) Invoke(bot *telegram.BotAPI, message *telegram.Message) {
-	c.Handler(bot, message)
-}
 
 func (c Command) String() string {
 	str := c.Name + " - " + c.Description + "\n"
@@ -27,14 +23,16 @@ func (c Command) String() string {
 }
 
 func Register(command Command) {
-	log.Printf("Registering command %v", command)
+	log.Printf("Registering command: %s", command.Name)
 	Commands = append(Commands, command)
 }
 
 func Handle(bot *telegram.BotAPI, message *telegram.Message) {
 	for _, command := range Commands {
-		if message.IsCommand() && message.Command() == command.Name {
-			command.Invoke(bot, message)
+		log.Printf("Checking command %s", command)
+		if message.Command() == command.Name {
+			log.Printf("Invoking command %s", command.Name)
+			command.Handler(bot, message)
 			return
 		}
 	}
