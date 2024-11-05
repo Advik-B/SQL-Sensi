@@ -3,9 +3,10 @@ package main
 import (
 	"log"
 	"os"
-	"sql.sensi/commands"
+
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	env "github.com/joho/godotenv"
+	"sql.sensi/commands"
 )
 
 func main() {
@@ -23,8 +24,8 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
-	commands.RegisterCommand(commands.Command{
-		Name: "start",
+	commands.Register(commands.Command{
+		Name:        "start",
 		Description: "Start the bot for the first time",
 		Handler: func(bot *telegram.BotAPI, message *telegram.Message) {
 			msg := telegram.NewMessage(message.Chat.ID, "Hello! I'm a bot that can help you with your daily tasks. Use /help to see all available commands.")
@@ -33,17 +34,12 @@ func main() {
 		Usage: "/start",
 	})
 
-
 	for update := range updates {
 		switch {
 		case update.Message == nil:
 			continue
 		case update.Message.IsCommand():
-			for _, command := range commands.Commands {
-				if update.Message.Command() == command.Name {
-					command.Invoke(bot, update.Message)
-				}
-			}
+			commands.Handle(bot, update.Message) // Pass the message to the command handler
 		}
 	}
 }
