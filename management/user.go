@@ -21,6 +21,7 @@ func UserFromUpdate(update *telegram.Update, db* database.MySQL) User {
 	if !u.ExistsInDataBase(db) {
 		u.AddToDataBase(db)
 	} else {
+
 		u.GetFromDataBase(db)
 	}
 	return u
@@ -67,4 +68,14 @@ func (u *User) ExistsInDataBase(db *database.MySQL) bool {
 		return false
 	}
 	return true
+}
+
+func (u *User) GetDB(db *database.MySQL) database.MySQL {
+	host := db.Host
+	uDB, err := database.New(host, u.SQLUsername, u.SQLPassword)
+	uDB.UseDatabase(u.SQLDBName)
+	if err != nil {
+		panic(err)
+	}
+	return *uDB
 }
