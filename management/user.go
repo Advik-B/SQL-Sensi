@@ -9,9 +9,8 @@ import (
 )
 
 
-func UserFromUpdate(update *telegram.Update, db* database.MySQL) User {
+func UserFromTelegram(user *telegram.User, db* database.MySQL) User {
 	u := User{}
-	user := update.Message.From
 	u.ID = int64(user.ID)
 	u.Username = user.UserName
 	u.FName = user.FirstName
@@ -21,11 +20,11 @@ func UserFromUpdate(update *telegram.Update, db* database.MySQL) User {
 	if !u.ExistsInDataBase(db) {
 		u.AddToDataBase(db)
 	} else {
-
 		u.GetFromDataBase(db)
 	}
 	return u
 }
+
 
 func (u *User) GetFromDataBase(db *database.MySQL) {
 	query := "SELECT * FROM users WHERE id = ?"
@@ -73,9 +72,9 @@ func (u *User) AddToDataBase(db *database.MySQL) {
 	}
 }
 
-func (u *User) ExistsInDataBase(db *database.MySQL) bool {
+func UserExists(db *database.MySQL, id int64) bool {
 	query := "SELECT id FROM users WHERE id = ?"
-	rows, err := db.Conn.Query(query, u.ID)
+	rows, err := db.Conn.Query(query, id)
 	if err != nil {
 		panic(err)
 	}
@@ -83,6 +82,11 @@ func (u *User) ExistsInDataBase(db *database.MySQL) bool {
 		return false
 	}
 	return true
+}
+
+// Proxy function to check if the user exists in the database
+func (u *User) ExistsInDataBase(db *database.MySQL) bool {
+	return UserExists(db, u.ID)
 }
 
 func (u *User) GetDB(db *database.MySQL) database.MySQL {
