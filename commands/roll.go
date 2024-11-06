@@ -17,3 +17,6 @@ func RollCommand() Command {
 	}
 }
 
+func init() {
+	Register(RollCommand())
+}
