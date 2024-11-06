@@ -17,8 +17,6 @@ func UserFromUpdate(update *telegram.Update, db* database.MySQL) User {
 	u.FName = user.FirstName
 	u.LName = user.LastName
 	u.LanguageCode = user.LanguageCode
-
-	db.UseDatabase("telegram")
 	// Check if the user exists in the database
 	query := "SELECT * FROM users WHERE id = ?"
 	rows, err := db.Conn.Query(query, u.ID)
@@ -47,7 +45,6 @@ func UserFromUpdate(update *telegram.Update, db* database.MySQL) User {
 
 
 func (u *User) AddToDataBase(db *database.MySQL) {
-	db.UseDatabase("telegram")
 	// Convert the ID->string->byte->hash
 	password, err := bcrypt.GenerateFromPassword([]byte(strconv.FormatInt(u.ID, 10)), bcrypt.MaxCost)
 	if err != nil {
