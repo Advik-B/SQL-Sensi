@@ -30,7 +30,7 @@ func main() {
 		case update.Message == nil:
 			continue
 		case update.Message.IsCommand():
-			commands.Handle(bot, update.Message) // Pass the message to the command handler
+			go commands.Handle(bot, update.Message) // Pass the message to the command handler
 		}
 	}
 }
