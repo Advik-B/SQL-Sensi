@@ -20,3 +20,13 @@ func start(bot *telegram.BotAPI, message *telegram.Message) {
 	bot.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf(WelcomeMessage, message.From.FirstName)))
 	log.Printf("User %s has been added to the database", message.From.FirstName)
 }
+
+
+func StartCommand() Command {
+	return Command{
+		Name:        "start",
+		Description: "Start the bot and create your account",
+		Handler:     start,
+		Usage:       "/start",
+	}
+}
