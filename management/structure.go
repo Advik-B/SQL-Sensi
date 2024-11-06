@@ -17,7 +17,6 @@ type User struct {
 	LanguageCode   string
 	CreatedAt      time.Time
 	IsAdmin        bool
-	IsPremium      bool
 	SQLUsername    string
 	SQLPassword    string
 	SQLDBName      string
