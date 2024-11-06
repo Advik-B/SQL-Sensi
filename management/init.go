@@ -21,21 +21,24 @@ func PrepareDB(db *database.MySQL) {
 
 	// Create the table
 	err = db.CreateTable("users", []string{
-		"id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY",
+		"id BIGINT UNSIGNED PRIMARY KEY",
 		"username VARCHAR(32)",
 		"first_name VARCHAR(32)",
 		"last_name VARCHAR(32)",
 		"language_code VARCHAR(8)",
 		"created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
 		"is_admin BOOLEAN DEFAULT FALSE",
-		"is_premium BOOLEAN DEFAULT FALSE",
-		"sql_username VARCHAR(32) NOT NULL",
-		"sql_password VARCHAR(32) NOT NULL",
-		"sql_db_name VARCHAR(32) NOT NULL",
+		"sql_username VARCHAR(20) NOT NULL",
+		"sql_password VARCHAR(20) NOT NULL",
+		"sql_db_name VARCHAR(20) NOT NULL",
 		"gemini_api_key VARCHAR(64)",
 	})
 	if err != nil {
 		panic(err)
 	}
+	db.Disconnect()
+
+	db.Database = "telegram" // Set the database to the telegram database
+	db.Connect() 		   // Reconnect to the telegram database
 }
 

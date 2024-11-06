@@ -1,22 +1,21 @@
 package database
 
 import (
+	"fmt"
 	"log"
 )
 
 func (m *MySQL) CreateUser(username string, password string) error {
+	// Log the action
+	log.Printf("Creating user %s with password %s", username, password)
+	// Construct the query using the escaped values
+	query := fmt.Sprintf("CREATE USER '%s'@'%%' IDENTIFIED BY '%s'", username, password)
 
-	/*
-	python:
-	cursor.execute(
-                f"CREATE USER IF NOT EXISTS '{sql_username}'@'%' IDENTIFIED BY '{password}'"
-            )
-	*/
-
-	// Create a user
-	_, err := m.Conn.Exec("CREATE USER " + username + "@'%' IDENTIFIED BY '" + password + "'")
+	// Execute the query
+	_, err := m.Conn.Exec(query)
 	if err != nil {
-		log.Println(err)
+		log.Print(err)
+		log.Println("Possible cause: The telegram.user table is dropped but the user is not removed from MySQL users")
 		return err
 	}
 	return nil

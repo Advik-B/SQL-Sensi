@@ -47,9 +47,9 @@ func (u *User) AddToDataBase(db *database.MySQL) {
 	if err != nil {
 	    panic(err)
 	}
-	u.SQLPassword = string(password)
+	u.SQLPassword = string(password)[:20] // Limit the password to 20 characters
 	u.SQLDBName = "user_" + strconv.FormatInt(u.ID, 10)
-	u.Username = "u" + strconv.FormatInt(u.ID, 10)
+	u.SQLUsername = "u" + strconv.FormatInt(u.ID, 10)
 	query := "INSERT INTO users (id, username, first_name, last_name, language_code, sql_username, sql_password, sql_db_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 	_, err = db.Conn.Exec(query, u.ID, u.Username, u.FName, u.LName, u.LanguageCode, u.SQLUsername, u.SQLPassword, u.SQLDBName)
 	if err != nil {
