@@ -56,10 +56,25 @@ func (u *User) AddToDataBase(db *database.MySQL) {
 	if err != nil {
 		panic(err)
 	}
+	// Create the user's database
+	db.CreateDatabase(u.SQLDBName)
+	// Create the user's database user
+	db.CreateUser(u.SQLUsername, u.SQLPassword)
+	// Grant the user access to the user's database
+	query = "GRANT ALL PRIVILEGES ON " + u.SQLDBName + ".* TO " + u.SQLUsername + "@'%'"
+	_, err = db.Conn.Exec(query)
+	if err != nil {
+		panic(err)
+	}
+	// Flush the privileges
+	_, err = db.Conn.Exec("FLUSH PRIVILEGES")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (u *User) ExistsInDataBase(db *database.MySQL) bool {
-	query := "SELECT * FROM users WHERE id = ?"
+	query := "SELECT id FROM users WHERE id = ?"
 	rows, err := db.Conn.Query(query, u.ID)
 	if err != nil {
 		panic(err)
