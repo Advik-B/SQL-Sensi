@@ -11,11 +11,17 @@ func PrepareDB(db *database.MySQL) {
 		panic(err)
 	}
 
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	// Create the database
 	db.CreateAndUseDB("telegram")
 
 	// Create the table
 	err = db.CreateTable("users", []string{
-		"id INT AUTO_INCREMENT PRIMARY KEY",
+		"id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY",
 		"username VARCHAR(32)",
 		"first_name VARCHAR(32)",
 		"last_name VARCHAR(32)",
