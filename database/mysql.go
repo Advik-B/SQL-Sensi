@@ -69,6 +69,20 @@ func (m *MySQL) CreateDatabase(name string) error {
 	return nil
 }
 
+// Helper function to create and use a database in one go
+func (m *MySQL) CreateAndUseDB(name string) error {
+	// Create and use the database
+	err := m.CreateDatabase(name)
+	if err != nil {
+		return err
+	}
+	err = m.UseDatabase(name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Disconnect disconnects from the MySQL database
 func (m *MySQL) Disconnect() error {
 	// Disconnect from the database
@@ -199,16 +213,6 @@ func (m *MySQL) Query(query string) (*sql.Rows, error) {
 		return nil, err
 	}
 	return rows, nil
-}
-
-func (m *MySQL) Exec(query string) error {
-	// Execute a custom query
-	_, err := m.Conn.Exec(query)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	return nil
 }
 
 func (m *MySQL) Ping() error {
