@@ -60,3 +60,138 @@ func (m *MySQL) CreateTable(name string, columns []string) error {
 	}
 	return nil
 }
+
+func (m *MySQL) Insert(table string, columns []string, values []string) error {
+	// Insert a row into the table
+	_, err := m.Conn.Exec(fmt.Sprintf("INSERT IGNORE INTO %s (%s) VALUES (%s)", table, strings.Join(columns, ", "), strings.Join(values, ", ")))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) Select(table string, columns []string, where string) (*sql.Rows, error) {
+	// Select rows from the table
+	rows, err := m.Conn.Query(fmt.Sprintf("SELECT %s FROM %s WHERE %s", strings.Join(columns, ", "), table, where))
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return rows, nil
+}
+
+func (m *MySQL) Update(table string, columns []string, values []string, where string) error {
+	// Update rows in the table
+	_, err := m.Conn.Exec(fmt.Sprintf("UPDATE %s SET %s WHERE %s", table, strings.Join(columns, ", "), where))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) Delete(table string, where string) error {
+	// Delete rows from the table
+	_, err := m.Conn.Exec(fmt.Sprintf("DELETE FROM %s WHERE %s", table, where))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) DropTable(name string) error {
+	// Drop the table
+	_, err := m.Conn.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s", name))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) DropDatabase(name string) error {
+	// Drop the database
+	_, err := m.Conn.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %s", name))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) TruncateTable(name string) error {
+	// Truncate the table
+	_, err := m.Conn.Exec(fmt.Sprintf("TRUNCATE TABLE %s", name))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) ShowDatabases() (*sql.Rows, error) {
+	// Show the databases
+	rows, err := m.Conn.Query("SHOW DATABASES")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return rows, nil
+}
+
+func (m *MySQL) ShowTables() (*sql.Rows, error) {
+	// Show the tables
+	rows, err := m.Conn.Query("SHOW TABLES")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return rows, nil
+}
+
+func (m *MySQL) DescribeTable(name string) (*sql.Rows, error) {
+	// Describe the table
+	rows, err := m.Conn.Query(fmt.Sprintf("DESCRIBE %s", name))
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return rows, nil
+}
+
+func (m *MySQL) Query(query string) (*sql.Rows, error) {
+	// Execute a custom query
+	rows, err := m.Conn.Query(query)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return rows, nil
+}
+
+func (m *MySQL) Exec(query string) error {
+	// Execute a custom query
+	_, err := m.Conn.Exec(query)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) Ping() error {
+	// Ping the database
+	err := m.Conn.Ping()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *MySQL) Connection() *sql.DB {
+	// Return the connection
+	return m.Conn
+}
