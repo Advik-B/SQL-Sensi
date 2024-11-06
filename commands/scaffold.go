@@ -4,6 +4,7 @@ import (
 	"log"
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"sql.sensi/database"
 )
 
 type Command struct {
@@ -14,7 +15,7 @@ type Command struct {
 }
 
 var Commands = []Command{}
-
+var DB database.MySQL
 
 func (c Command) String() string {
 	str := c.Name + " - " + c.Description + "\n"
