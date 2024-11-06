@@ -55,6 +55,7 @@ func (m *MySQL) UseDatabase(name string) error {
 		log.Println(err)
 		return err
 	}
+	m.Database = name
 	return nil
 }
 
