@@ -1,7 +1,10 @@
 package management
 
 import (
+	"database/sql"
 	"strconv"
+
+	"time"
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -27,30 +30,42 @@ func UserFromTelegram(user *telegram.User, db* database.MySQL) User {
 
 
 func (u *User) GetFromDataBase(db *database.MySQL) {
-	query := "SELECT * FROM users WHERE id = ?"
-	rows, err := db.Conn.Query(query, u.ID)
-	if err != nil {
-		panic(err)
-	}
-	if !rows.Next() {
-		panic("User not found in database")
-	}
-	err = rows.Scan(
-		&u.ID,
-		&u.Username,
-		&u.FName,
-		&u.LName,
-		&u.LanguageCode,
-		&u.CreatedAt,
-		&u.IsAdmin,
-		&u.SQLUsername,
-		&u.SQLPassword,
-		&u.SQLDBName,
-		&u.GeminiAPIKey,
-	)
-	if err != nil {
-		panic(err)
-	}
+    query := "SELECT * FROM users WHERE id = ?"
+    rows, err := db.Conn.Query(query, u.ID)
+    if err != nil {
+        panic(err)
+    }
+    defer rows.Close()
+    if !rows.Next() {
+        panic("User not found in database")
+    }
+    var createdAt []byte
+    var geminiAPIKey sql.NullString
+    err = rows.Scan(
+        &u.ID,
+        &u.Username,
+        &u.FName,
+        &u.LName,
+        &u.LanguageCode,
+        &createdAt,
+        &u.IsAdmin,
+        &u.SQLUsername,
+        &u.SQLPassword,
+        &u.SQLDBName,
+        &geminiAPIKey,
+    )
+    if err != nil {
+        panic(err)
+    }
+    u.CreatedAt, err = time.Parse("2006-01-02 15:04:05", string(createdAt))
+    if err != nil {
+        panic(err)
+    }
+    if geminiAPIKey.Valid {
+        u.GeminiAPIKey = geminiAPIKey.String
+    } else {
+        u.GeminiAPIKey = ""
+    }
 }
 
 func (u *User) AddToDataBase(db *database.MySQL) {

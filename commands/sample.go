@@ -82,7 +82,7 @@ func sample(bot *telegram.BotAPI, message *telegram.Message) {
 	user_db := user.GetDB(&DB)
 	user_db.Connect()
 	defer user_db.Disconnect()
-
+	log.Println("Creating sample tables")
 	user_db.UseDatabase(user.SQLDBName)
 
 	queries := strings.Split(SampleQueries, ";")
