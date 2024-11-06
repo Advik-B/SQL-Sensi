@@ -4,8 +4,9 @@ import (
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func RollCommand() Command {
-	return Command{
+// Just a random fun command to roll a dice (i wrote this to test the dice feature lol)
+func init() {
+	Register(Command{
 		Name:        "roll",
 		Description: "Roll a dice",
 		Handler: func(bot *telegram.BotAPI, message *telegram.Message) {
@@ -14,9 +15,5 @@ func RollCommand() Command {
 			bot.Send(telegram.NewDice(message.Chat.ID))
 		},
 		Usage: "/roll",
-	}
-}
-
-func init() {
-	Register(RollCommand())
+	})
 }
