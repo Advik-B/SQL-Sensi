@@ -19,7 +19,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	defer mysql.Disconnect()
+	
 	// Test connection to the MySQL database
 	err = mysql.Ping()
 	if err != nil {
@@ -44,7 +45,4 @@ func main() {
 		}
 		println(name)
 	}
-
-	// Disconnect from the MySQL database
-	mysql.Disconnect()
 }
