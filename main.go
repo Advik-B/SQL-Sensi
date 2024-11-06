@@ -22,6 +22,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	defer db.Disconnect()
 	management.PrepareDB(db)
 	commands.Initialize(db)
 
@@ -41,4 +42,5 @@ func main() {
 			go commands.Handle(bot, update.Message) // Pass the message to the command handler
 		}
 	}
+
 }
