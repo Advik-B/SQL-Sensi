@@ -14,7 +14,7 @@ func (m *MySQL) Connect() error {
 	// Connect to the database
 	var dsn string
 	if strings.TrimSpace(m.Database) == "" {
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)", m.User, m.Password, m.Host, m.Port)
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/", m.User, m.Password, m.Host, m.Port)
 	} else {
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", m.User, m.Password, m.Host, m.Port, m.Database)
 	}
@@ -25,6 +25,29 @@ func (m *MySQL) Connect() error {
 	}
 
 	m.Conn = conn
+	return nil
+}
+
+func (m *MySQL) WhereAmI() string {
+	whereami, err := m.Conn.Query("SELECT DATABASE()")
+	if err != nil {
+		log.Println(err)
+		return "<ERROR>"
+	}
+	var name string = "<NO DATABASE>"
+	for whereami.Next() {
+		whereami.Scan(&name)
+	}
+	return name
+}
+
+func (m *MySQL) UseDatabase(name string) error {
+	// Use the database
+	_, err := m.Conn.Exec(fmt.Sprintf("USE %s", name))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	return nil
 }
 
