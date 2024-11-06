@@ -49,6 +49,9 @@ func (m *MySQL) WhereAmI() string {
 }
 
 func (m *MySQL) UseDatabase(name string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Use the database
 	_, err := m.Conn.Exec(fmt.Sprintf("USE %s", name))
 	if err != nil {
@@ -61,6 +64,9 @@ func (m *MySQL) UseDatabase(name string) error {
 
 // CreateDatabase creates the database
 func (m *MySQL) CreateDatabase(name string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Create the database
 	_, err := m.Conn.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", name))
 	if err != nil {
@@ -97,6 +103,9 @@ func (m *MySQL) Disconnect() error {
 
 // CreateTable creates a table in the database
 func (m *MySQL) CreateTable(name string, columns []string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Create the table
 	_, err := m.Conn.Exec(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", name, strings.Join(columns, ", ")))
 	if err != nil {
@@ -107,6 +116,9 @@ func (m *MySQL) CreateTable(name string, columns []string) error {
 }
 
 func (m *MySQL) Insert(table string, columns []string, values []string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Insert a row into the table
 	_, err := m.Conn.Exec(fmt.Sprintf("INSERT IGNORE INTO %s (%s) VALUES (%s)", table, strings.Join(columns, ", "), strings.Join(values, ", ")))
 	if err != nil {
@@ -117,6 +129,9 @@ func (m *MySQL) Insert(table string, columns []string, values []string) error {
 }
 
 func (m *MySQL) Select(table string, columns []string, where string) (*sql.Rows, error) {
+	if m.Conn == nil {
+		return nil, fmt.Errorf("Database connection is nil")
+	}
 	// Select rows from the table
 	rows, err := m.Conn.Query(fmt.Sprintf("SELECT %s FROM %s WHERE %s", strings.Join(columns, ", "), table, where))
 	if err != nil {
@@ -127,6 +142,9 @@ func (m *MySQL) Select(table string, columns []string, where string) (*sql.Rows,
 }
 
 func (m *MySQL) Update(table string, columns []string, values []string, where string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Update rows in the table
 	_, err := m.Conn.Exec(fmt.Sprintf("UPDATE %s SET %s WHERE %s", table, strings.Join(columns, ", "), where))
 	if err != nil {
@@ -137,6 +155,9 @@ func (m *MySQL) Update(table string, columns []string, values []string, where st
 }
 
 func (m *MySQL) Delete(table string, where string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Delete rows from the table
 	_, err := m.Conn.Exec(fmt.Sprintf("DELETE FROM %s WHERE %s", table, where))
 	if err != nil {
@@ -147,6 +168,9 @@ func (m *MySQL) Delete(table string, where string) error {
 }
 
 func (m *MySQL) DropTable(name string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Drop the table
 	_, err := m.Conn.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s", name))
 	if err != nil {
@@ -157,6 +181,9 @@ func (m *MySQL) DropTable(name string) error {
 }
 
 func (m *MySQL) DropDatabase(name string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Drop the database
 	_, err := m.Conn.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %s", name))
 	if err != nil {
@@ -167,6 +194,9 @@ func (m *MySQL) DropDatabase(name string) error {
 }
 
 func (m *MySQL) TruncateTable(name string) error {
+	if m.Conn == nil {
+		return fmt.Errorf("Database connection is nil")
+	}
 	// Truncate the table
 	_, err := m.Conn.Exec(fmt.Sprintf("TRUNCATE TABLE %s", name))
 	if err != nil {
@@ -177,6 +207,9 @@ func (m *MySQL) TruncateTable(name string) error {
 }
 
 func (m *MySQL) ShowDatabases() (*sql.Rows, error) {
+	if m.Conn == nil {
+		return nil, fmt.Errorf("Database connection is nil")
+	}
 	// Show the databases
 	rows, err := m.Conn.Query("SHOW DATABASES")
 	if err != nil {
@@ -187,6 +220,9 @@ func (m *MySQL) ShowDatabases() (*sql.Rows, error) {
 }
 
 func (m *MySQL) ShowTables() (*sql.Rows, error) {
+	if m.Conn == nil {
+		return nil, fmt.Errorf("Database connection is nil")
+	}
 	// Show the tables
 	rows, err := m.Conn.Query("SHOW TABLES")
 	if err != nil {
@@ -197,6 +233,9 @@ func (m *MySQL) ShowTables() (*sql.Rows, error) {
 }
 
 func (m *MySQL) DescribeTable(name string) (*sql.Rows, error) {
+	if m.Conn == nil {
+		return nil, fmt.Errorf("Database connection is nil")
+	}
 	// Describe the table
 	rows, err := m.Conn.Query(fmt.Sprintf("DESCRIBE %s", name))
 	if err != nil {
@@ -207,6 +246,9 @@ func (m *MySQL) DescribeTable(name string) (*sql.Rows, error) {
 }
 
 func (m *MySQL) Query(query string) (*sql.Rows, error) {
+	if m.Conn == nil {
+		return nil, fmt.Errorf("Database connection is nil")
+	}
 	// Execute a custom query
 	rows, err := m.Conn.Query(query)
 	if err != nil {

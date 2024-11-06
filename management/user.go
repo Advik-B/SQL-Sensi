@@ -30,6 +30,9 @@ func UserFromTelegram(user *telegram.User, db* database.MySQL) User {
 
 
 func (u *User) GetFromDataBase(db *database.MySQL) {
+    if db.Conn == nil {
+        panic("Database connection is nil")
+    }
     query := "SELECT * FROM users WHERE id = ?"
     rows, err := db.Conn.Query(query, u.ID)
     if err != nil {
@@ -69,6 +72,9 @@ func (u *User) GetFromDataBase(db *database.MySQL) {
 }
 
 func (u *User) AddToDataBase(db *database.MySQL) {
+    if db.Conn == nil {
+        panic("Database connection is nil")
+    }
 	// Convert the ID->string->byte->hash
 	password, err := bcrypt.GenerateFromPassword([]byte(strconv.FormatInt(u.ID, 10)), bcrypt.DefaultCost)
 	if err != nil {
@@ -100,9 +106,12 @@ func (u *User) AddToDataBase(db *database.MySQL) {
 }
 
 func UserExists(db *database.MySQL, id int64) bool {
+    if db.Conn == nil {
+        panic("Database connection is nil")
+    }
 	query := "SELECT id FROM users WHERE id = ?"
 	rows, err := db.Conn.Query(query, id)
-	if err != nil {
+	if (err != nil) {
 		panic(err)
 	}
 	if !rows.Next() {
@@ -113,10 +122,16 @@ func UserExists(db *database.MySQL, id int64) bool {
 
 // Proxy function to check if the user exists in the database
 func (u *User) ExistsInDataBase(db *database.MySQL) bool {
+    if db.Conn == nil {
+        panic("Database connection is nil")
+    }
 	return UserExists(db, u.ID)
 }
 
 func (u *User) GetDB(db *database.MySQL) database.MySQL {
+    if db.Conn == nil {
+        panic("Database connection is nil")
+    }
 	host := db.Host
 	uDB, err := database.New(host, u.SQLUsername, u.SQLPassword)
 	uDB.UseDatabase(u.SQLDBName)

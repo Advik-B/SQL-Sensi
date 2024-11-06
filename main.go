@@ -29,7 +29,6 @@ func main() {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-
 	u := telegram.NewUpdate(0)
 	// u.Timeout = 60
 
@@ -43,5 +42,4 @@ func main() {
 			go commands.Handle(bot, update.Message) // Pass the message to the command handler
 		}
 	}
-
 }
