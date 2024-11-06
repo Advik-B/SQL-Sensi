@@ -18,37 +18,53 @@ func UserFromUpdate(update *telegram.Update, db* database.MySQL) User {
 	u.LName = user.LastName
 	u.LanguageCode = user.LanguageCode
 	// Check if the user exists in the database
+	if !u.ExistsInDataBase(db) {
+		u.AddToDataBase(db)
+	} else {
+		u.GetFromDataBase(db)
+	}
+	return u
+}
+
+func (u *User) GetFromDataBase(db *database.MySQL) {
 	query := "SELECT * FROM users WHERE id = ?"
 	rows, err := db.Conn.Query(query, u.ID)
 	if err != nil {
 		panic(err)
 	}
-	// Check the number of rows returned
 	if !rows.Next() {
-		// User does not exist, insert the user
-		insertQuery := "INSERT INTO users (id, username, first_name, last_name, language_code) VALUES (?, ?, ?, ?, ?)"
-		_, err := db.Conn.Exec(insertQuery, u.ID, u.Username, u.FName, u.LName, u.LanguageCode)
-		if err != nil {
-			panic(err)
-		}
-	} else {
-		// User exists, update the user
-		updateQuery := "UPDATE users SET username = ?, first_name = ?, last_name = ?, language_code = ? WHERE id = ?"
-		_, err := db.Conn.Exec(updateQuery, u.Username, u.FName, u.LName, u.LanguageCode, u.ID)
-		if err != nil {
-			panic(err)
-		}
+		panic("User not found in database")
 	}
-	rows.Close()
-	return u
+	err = rows.Scan(&u.ID, &u.Username, &u.FName, &u.LName, &u.LanguageCode, &u.SQLUsername, &u.SQLPassword, &u.SQLDBName)
+	if err != nil {
+		panic(err)
+	}
 }
-
 
 func (u *User) AddToDataBase(db *database.MySQL) {
 	// Convert the ID->string->byte->hash
-	password, err := bcrypt.GenerateFromPassword([]byte(strconv.FormatInt(u.ID, 10)), bcrypt.MaxCost)
+	password, err := bcrypt.GenerateFromPassword([]byte(strconv.FormatInt(u.ID, 10)), bcrypt.DefaultCost)
 	if err != nil {
 	    panic(err)
 	}
+	u.SQLPassword = string(password)
+	u.SQLDBName = "user_" + strconv.FormatInt(u.ID, 10)
+	u.Username = "u" + strconv.FormatInt(u.ID, 10)
+	query := "INSERT INTO users (id, username, first_name, last_name, language_code, sql_username, sql_password, sql_db_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	_, err = db.Conn.Exec(query, u.ID, u.Username, u.FName, u.LName, u.LanguageCode, u.SQLUsername, u.SQLPassword, u.SQLDBName)
+	if err != nil {
+		panic(err)
+	}
+}
 
+func (u *User) ExistsInDataBase(db *database.MySQL) bool {
+	query := "SELECT * FROM users WHERE id = ?"
+	rows, err := db.Conn.Query(query, u.ID)
+	if err != nil {
+		panic(err)
+	}
+	if !rows.Next() {
+		return false
+	}
+	return true
 }
