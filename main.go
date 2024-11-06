@@ -18,6 +18,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	bot.Debug = true
 	db, err := database.FromEnvironment()
 	if err != nil {
 		log.Panic(err)
@@ -30,7 +31,7 @@ func main() {
 
 
 	u := telegram.NewUpdate(0)
-	u.Timeout = 60
+	// u.Timeout = 60
 
 	updates := bot.GetUpdatesChan(u)
 
