@@ -35,3 +35,7 @@ func HelpCommand() Command {
 		Usage: "/help or /help <command>",
 	}
 }
+
+func init() {
+	Register(HelpCommand())
+}
