@@ -35,7 +35,19 @@ func (u *User) GetFromDataBase(db *database.MySQL) {
 	if !rows.Next() {
 		panic("User not found in database")
 	}
-	err = rows.Scan(&u.ID, &u.Username, &u.FName, &u.LName, &u.LanguageCode, &u.SQLUsername, &u.SQLPassword, &u.SQLDBName)
+	err = rows.Scan(
+		&u.ID,
+		&u.Username,
+		&u.FName,
+		&u.LName,
+		&u.LanguageCode,
+		&u.CreatedAt,
+		&u.IsAdmin,
+		&u.SQLUsername,
+		&u.SQLPassword,
+		&u.SQLDBName,
+		&u.GeminiAPIKey,
+	)
 	if err != nil {
 		panic(err)
 	}

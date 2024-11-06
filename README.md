@@ -5,3 +5,4 @@ A telegram bot to help learn mysql
 - Allowing direct connection to the database
 - Allowing commands thru telegram
 - Sharing of tables with other users
+- Providing sample tables and data
