@@ -28,12 +28,8 @@ func main() {
 
 	mysql.CreateDatabase("test")
 	// mysql.UseDatabase("test")
-	whereami, err := mysql.Conn.Query("SELECT DATABASE()")	
-	for whereami.Next() {
-		var name string = "<NO DATABASE>"
-		whereami.Scan(&name)
-		println(name)
-	}
+	whereami := mysql.WhereAmI() // Returns the current database name
+	println(whereami)
 
 	rows, err := mysql.ShowDatabases()
 	if err != nil {

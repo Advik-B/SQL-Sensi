@@ -28,6 +28,13 @@ func (m *MySQL) Connect() error {
 	return nil
 }
 
+/* 
+	Returns the current database name
+
+	if there is an error, it will return "<ERROR>"
+	
+	if we are not inside a database, it will return "<NO DATABASE>"
+ */
 func (m *MySQL) WhereAmI() string {
 	whereami, err := m.Conn.Query("SELECT DATABASE()")
 	if err != nil {
