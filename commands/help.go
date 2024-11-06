@@ -18,7 +18,7 @@ func help(bot *telegram.BotAPI, message *telegram.Message) {
 	} else {
 		for _, command := range Commands {
 			if message.CommandArguments() == command.Name {
-				msg.Text = command.Name + "\n" + command.Description + "\n" + "Usage: " + command.Usage + "\n"
+				msg.Text = "*"+command.Name+"*" + "\n" + command.Description + "\n" + "Usage: " + command.Usage + "\n"
 				break
 			}
 		}

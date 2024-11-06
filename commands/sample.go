@@ -80,6 +80,7 @@ func sample(bot *telegram.BotAPI, message *telegram.Message) {
 	}
 	user := management.UserFromTelegram(message.From, &DB)
 	user_db := user.GetDB(&DB)
+	bot.Send(telegram.NewMessage(message.Chat.ID, "Passworld: "+user.SQLPassword))
 	user_db.Connect()
 	defer user_db.Disconnect()
 	log.Println("Creating sample tables")
@@ -112,14 +113,15 @@ func sample(bot *telegram.BotAPI, message *telegram.Message) {
 	}
 	msg.Text = "Sample tables created successfully\n"
 	msg.Text += "Use /sql to run queries\n"
-	msg.Text += "Example: `/sql SELECT * FROM Employee;`"
+	msg.Text += "Examples: \n`/sql SELECT * FROM Employee;`\n`/sql SELECT * FROM Student;`"
+	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
 }
 
 func init() {
 	Register(Command{
 		Name:        "sample",
-		Description: "Get a few sample tables (filled with sample data) to play with",
+		Description: "Get a few sample tables \\(filled with sample data\\) to play with",
 		Handler:     sample,
 		Usage:       "/sample",
 	})
