@@ -31,6 +31,7 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 	user_db.UseDatabase(user.SQLDBName)
 
 	user_db.Conn.Exec("SET SESSION sql_mode = 'ANSI_QUOTES'")
+	// Execute the query
 	rows, err := user_db.Conn.Query(query)
 	if err != nil {
 		msg.Text = "```\n" + err.Error() + "\n```"
@@ -60,6 +61,7 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 
 	const maxRows = 40
 	rowCount := 0
+	totalRowCount := 0
 	// Fetch rows and append them to the table
 	for rows.Next() {
 		rows.Scan(valuePtrs...)
@@ -86,6 +88,7 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 		}
 		table.Append(strValues)
 		rowCount++
+		totalRowCount++
 	
 		if rowCount >= maxRows {
 			table.Render()
@@ -96,9 +99,13 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 			// Reset the table and dataIO for the next batch of rows
 			dataIO.Reset()
 			table = tablewriter.NewWriter(&dataIO)
-			table.SetHeader(columns)
 			rowCount = 0
 		}
+	}
+	if totalRowCount == 0 {
+		msg.Text = "Query successful, but no rows returned ✅"
+		bot.Send(msg)
+		return
 	}
 	
 	// Render and send any remaining rows
