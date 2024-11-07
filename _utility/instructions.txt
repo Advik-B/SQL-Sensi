@@ -1,0 +1,64 @@
+# MarkdownV2 style
+To use this mode, pass MarkdownV2 in the parse_mode field. Use the following syntax in your message:
+
+```
+*bold \*text*
+_italic \*text_
+__underline__
+~strikethrough~
+||spoiler||
+*bold _italic bold ~italic bold strikethrough ||italic bold strikethrough spoiler||~ __underline italic bold___ bold*
+[inline URL](http://www.example.com/)
+[inline mention of a user](tg://user?id=123456789)
+![👍](tg://emoji?id=5368324170671202286)
+`inline fixed-width code`
+```
+pre-formatted fixed-width code block
+```
+```python
+pre-formatted fixed-width code block written in the Python programming language
+```
+>Block quotation started
+>Block quotation continued
+>Block quotation continued
+>Block quotation continued
+>The last line of the block quotation
+**>The expandable block quotation started right after the previous block quotation
+>It is separated from the previous block quotation by an empty bold entity
+>Expandable block quotation continued
+>Hidden by default part of the expandable block quotation started
+>Expandable block quotation continued
+>The last line of the expandable block quotation with the expandability mark||
+```
+
+
+Please note:
+- Any character with code between 1 and 126 inclusively can be escaped anywhere with a preceding '\' character, in which case it is treated as an ordinary character and not a part of the markup. This implies that '\' character usually must be escaped with a preceding '\' character.
+- Inside pre and code entities, all '`' and '\' characters must be escaped with a preceding '\' character.
+- Inside the (...) part of the inline link and custom emoji definition, all ')' and '\' must be escaped with a preceding '\' character.
+- In all other places characters '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' must be escaped with the preceding character '\'.
+- In case of ambiguity between italic and underline entities __ is always greadily treated from left to right as beginning or end of an underline entity, so instead of ___italic underline___ use ___italic underline_**__, adding an empty bold entity as a separator.
+
+
+
+
+start - Start the bot and create your account
+help - Show all available commands
+sql - Execute a SQL query
+connect - Get the credentials to connect to your database
+ai - Generate an AI response from your query
+sample - Get a few sample tables (filled with sample data) to play
+welcome - Show the welcome message again
+credentials - Get the credentials to connect to your database
+select - Run a SELECT query on the database
+insert - Run an INSERT query on the database
+update - Run an UPDATE query on the database
+delete - Run a DELETE query on the database
+show - Run a SHOW query on the database
+describe - Run a DESCRIBE query on the database
+create - Run a CREATE query on the database
+alter - Run an ALTER query on the database
+drop - Run a DROP query on the database
+clear - Clear the chat history with the AI
+apikey - (advanced) Set/Clear your Gemini API key
+roll - Roll a dice
