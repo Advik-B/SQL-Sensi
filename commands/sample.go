@@ -9,7 +9,7 @@ import (
 )
 
 var SampleQueries = `
-CREATE TABLE IF NOT EXISTS Employee (
+CREATE TABLE IF NOT EXISTS emp (
 	ID INT PRIMARY KEY AUTO_INCREMENT,
 	Name VARCHAR(255) NOT NULL,
 	Age INT,
@@ -19,12 +19,12 @@ CREATE TABLE IF NOT EXISTS Employee (
 	Commision INT
 );
 
-CREATE TABLE IF NOT EXISTS Department (
+CREATE TABLE IF NOT EXISTS depart (
 	DepartNo INT PRIMARY KEY AUTO_INCREMENT,
 	DepartName VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Student (
+CREATE TABLE IF NOT EXISTS student (
 	ID INT PRIMARY KEY AUTO_INCREMENT,
 	Name VARCHAR(255) NOT NULL,
 	Age INT,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS Student (
 `
 
 var SampleInserts = `
-INSERT IGNORE INTO Employee (Name, Age, DepartNo, Salary, Commision) VALUES 
+INSERT INTO emp (Name, Age, DepartNo, Salary, Commision) VALUES 
 ('Roop', 32, 5, 75000, 3000),
 ('Adithya', 27, 5, 65000, 2000),
 ('Advik', 23, 5, 69696969, 1000),
@@ -57,7 +57,7 @@ INSERT IGNORE INTO Employee (Name, Age, DepartNo, Salary, Commision) VALUES
 ('Eve', 20, 4, 30000, 500),
 ('Frank', 45, 4, 90000, 6000);
 
-INSERT IGNORE INTO Department (DepartName) VALUES
+INSERT INTO depart (DepartName) VALUES
 ('Human Resources'),
 ('Finance'),
 ('Marketing'),
@@ -70,7 +70,7 @@ INSERT IGNORE INTO Department (DepartName) VALUES
 ('Quality Assurance'),
 ('Logistics');
 
-INSERT IGNORE INTO Student (Name, Age, Grade) VALUES
+INSERT INTO student (Name, Age, Grade) VALUES
 ('Roop', 32, 10),
 ('Adithya', 27, 9),
 ('Advik', 23, 8),
@@ -106,6 +106,34 @@ func sample(bot *telegram.BotAPI, message *telegram.Message) {
 	defer user_db.Disconnect()
 	log.Println("Creating sample tables")
 	user_db.UseDatabase(user.SQLDBName)
+
+	// If some tables exist, do nothing
+	rows, err := user_db.Conn.Query("SHOW TABLES;")
+	if err != nil {
+		msg.Text = fmt.Sprintf("Error executing query: %s", err)
+		log.Println(err)
+		bot.Send(msg)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var table string
+		err = rows.Scan(&table)
+		if err != nil {
+			msg.Text = fmt.Sprintf("Error scanning rows: %s", err)
+			log.Println(err)
+			bot.Send(msg)
+			return
+		}
+		switch table {
+		case "emp", "depart", "student":
+			msg.Text = "Sample tables already exist\n"
+			msg.Text += "Use /sql to run queries\n"
+			bot.Send(msg)
+			return
+		}
+	}
+
 
 	queries := strings.Split(SampleQueries, ";")
 	for _, query := range queries {
