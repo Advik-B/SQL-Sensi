@@ -36,10 +36,12 @@ func main() {
 
 	for update := range updates {
 		switch {
-		case update.Message == nil:
-			continue
+		case update.CallbackQuery != nil:
+			go commands.HandleCallback(bot, &update) // Pass the callback query to the callback handler
 		case update.Message.IsCommand():
 			go commands.Handle(bot, update.Message) // Pass the message to the command handler
+		default:
+			log.Printf("Received a non-command message %v", update)
 		}
 	}
 }
