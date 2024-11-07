@@ -2,8 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"log"
-
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -27,7 +25,6 @@ func help(bot *telegram.BotAPI, message *telegram.Message) {
 		}
 	}
 	msg.ParseMode = "MarkdownV2"
-	log.Println("\n" + msg.Text)
 	bot.Send(msg)
 }
 
