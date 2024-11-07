@@ -16,9 +16,12 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 	if !accountCreateReminder(bot, message) {
 		return
 	}
+	// Create a new message
 	msg := telegram.NewMessage(message.Chat.ID, "")
 	// Join the arguments to form a single string
-	query := message.CommandArguments()
+	query := message.Text
+	query = strings.TrimPrefix(query, "/sql")
+	
 	if strings.TrimSpace(query) == "" {
 		msg.Text = "Please provide a query"
 		bot.Send(msg)
