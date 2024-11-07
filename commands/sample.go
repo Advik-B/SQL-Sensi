@@ -96,12 +96,10 @@ INSERT IGNORE INTO Student (Name, Age, Grade) VALUES
 `
 
 func sample(bot *telegram.BotAPI, message *telegram.Message) {
-	msg := telegram.NewMessage(message.Chat.ID, "")
-	if !management.UserExists(&DB, message.From.ID) {
-		msg.Text = "You need to create an account first, use /start"
-		bot.Send(msg)
+	if !accountCreateReminder(bot, message) {
 		return
 	}
+	msg := telegram.NewMessage(message.Chat.ID, "")
 	user := management.UserFromTelegram(message.From, &DB)
 	user_db := user.GetDB(&DB)
 	user_db.Connect()
