@@ -2,11 +2,13 @@ package commands
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"strings"
+
+	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
-	"os"
-	"fmt"
-	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"sql.sensi/management"
 )
 
@@ -94,6 +96,22 @@ func clearChatHistory(bot *telegram.BotAPI, message *telegram.Message) {
 }
 
 
+func SetAPIKey(bot *telegram.BotAPI, message *telegram.Message) {
+	if !accountCreateReminder(bot, message) {
+		return
+	}
+	account := management.UserFromTelegram(message.From, &DB)
+	newAPIKey := message.CommandArguments()
+	if strings.TrimSpace(newAPIKey) == "" {
+		msg := telegram.NewMessage(message.Chat.ID, "Please provide a new API key")
+		bot.Send(msg)
+		return
+	}
+	account.GeminiAPIKey = newAPIKey
+	management.UpdateUser(&account, &DB)
+	msg := telegram.NewMessage(message.Chat.ID, "Your Gemini API key has been updated")
+	bot.Send(msg)
+}
 func init() {
 	Register(
 		Command{
