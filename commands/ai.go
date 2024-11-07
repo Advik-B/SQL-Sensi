@@ -83,11 +83,32 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	client.Close()
 }
 
+func clearChatHistory(bot *telegram.BotAPI, message *telegram.Message) {
+	if !accountCreateReminder(bot, message) {
+		return
+	}
+	// Set the chat history to an empty array
+	chatHistory[message.Chat.ID] = []*genai.Content{}
+	msg := telegram.NewMessage(message.Chat.ID, "Chat history cleared")
+	bot.Send(msg)
+}
+
+
 func init() {
-	RegisterCommand(
+	Register(
 		Command{
-			Command:     "ai",
-			Description: "Generate AI",
-			Function:    ai,
+			Name: 	  "ai",
+			Description: "Generate an AI response",
+			Handler: ai,
+			Usage: "/ai <text>\nExample: `/ai Give me a command to create an employee table with id, name, and age columns`",
 		},
+	)
+	Register(
+		Command{
+			Name: 	  "clear",
+			Description: "Clear the chat history with the AI",
+			Handler: clearChatHistory,
+			Usage: "/clear",
+		},
+	)
 }
