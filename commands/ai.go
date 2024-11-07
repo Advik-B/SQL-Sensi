@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	// "time"
+	"time"
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/generative-ai-go/genai"
@@ -34,19 +34,19 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 		return
 	}
 	// Show the typing indicator
-	// var typing bool = true
-	// go func() {
-	// 	for {
-	// 		if typing {
-	// 			bot.Send(telegram.NewChatAction(message.Chat.ID, telegram.ChatTyping))
-	// 			log.Println("AI typing")
-	// 			time.Sleep(5 * time.Second)
-	// 		} else {
-	// 			return
-	// 		}
-	// 	}
-	// }()
-	bot.Send(telegram.NewChatAction(message.Chat.ID, telegram.ChatTyping))
+	var typing bool = true
+	go func() {
+		for {
+			if typing {
+				bot.Send(telegram.NewChatAction(message.Chat.ID, telegram.ChatTyping))
+				log.Println("AI typing")
+				time.Sleep(1 * time.Second)
+			} else {
+				return
+			}
+		}
+	}()
+	// bot.Send(telegram.NewChatAction(message.Chat.ID, telegram.ChatTyping))
 
 	// Get the user's Gemini API key
 	account := management.UserFromTelegram(message.From, &DB)
@@ -101,7 +101,7 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 
 	// Close the client
 	client.Close()
-	// typing = false
+	typing = false
 	log.Println("AI response sent")
 }
 
