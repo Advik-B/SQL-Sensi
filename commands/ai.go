@@ -3,8 +3,11 @@ package commands
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
+
+	// "time"
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/generative-ai-go/genai"
@@ -30,6 +33,22 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	if !accountCreateReminder(bot, message) {
 		return
 	}
+	// Show the typing indicator
+	// var typing bool = true
+	// go func() {
+	// 	for {
+	// 		if typing {
+	// 			bot.Send(telegram.NewChatAction(message.Chat.ID, telegram.ChatTyping))
+	// 			log.Println("AI typing")
+	// 			time.Sleep(5 * time.Second)
+	// 		} else {
+	// 			return
+	// 		}
+	// 	}
+	// }()
+	bot.Send(telegram.NewChatAction(message.Chat.ID, telegram.ChatTyping))
+
+	// Get the user's Gemini API key
 	account := management.UserFromTelegram(message.From, &DB)
 	var geminiAPIKey string
 	if account.GeminiAPIKey != "" {
@@ -41,10 +60,8 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(geminiAPIKey))
 	if err != nil {
-		msg := telegram.NewMessage(message.Chat.ID, "")
-		msg.Text = "Error: " + "```" + err.Error() + "```"
-		msg.ParseMode = "MarkdownV2"
-		bot.Send(msg)
+		log.Println("Error creating client")
+		log.Println(err)
 		return
 	}
 
@@ -68,6 +85,8 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	}
 	res, err := cs.SendMessage(ctx, genai.Text(text))
 	if err != nil {
+		log.Println("Error sending message to AI")
+		log.Println(err)
 		msg := telegram.NewMessage(message.Chat.ID, "")
 		msg.Text = "Error: " + "```" + err.Error() + "```"
 		msg.ParseMode = "MarkdownV2"
@@ -76,13 +95,14 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	}
 	// Send the response
 	msg := telegram.NewMessage(message.Chat.ID, responseToString(res))
-	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
 	// Save the chat history
 	chatHistory[message.Chat.ID] = append(chatHistory[message.Chat.ID], cs.History...)
 
 	// Close the client
 	client.Close()
+	// typing = false
+	log.Println("AI response sent")
 }
 
 func clearChatHistory(bot *telegram.BotAPI, message *telegram.Message) {
