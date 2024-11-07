@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS Student (
 `
 
 var SampleInserts = `
-INSERT INTO Employee (Name, Age, DepartNo, Salary, Commision) VALUES 
+INSERT IGNORE INTO Employee (Name, Age, DepartNo, Salary, Commision) VALUES 
 ('Roop', 32, 5, 75000, 3000),
 ('Adithya', 27, 5, 65000, 2000),
 ('Advik', 23, 5, 69696969, 1000),
@@ -57,7 +57,7 @@ INSERT INTO Employee (Name, Age, DepartNo, Salary, Commision) VALUES
 ('Eve', 20, 4, 30000, 500),
 ('Frank', 45, 4, 90000, 6000);
 
-INSERT INTO Department (DepartName) VALUES
+INSERT IGNORE INTO Department (DepartName) VALUES
 ('Human Resources'),
 ('Finance'),
 ('Marketing'),
@@ -70,7 +70,7 @@ INSERT INTO Department (DepartName) VALUES
 ('Quality Assurance'),
 ('Logistics');
 
-INSERT INTO Student (Name, Age, Grade) VALUES
+INSERT IGNORE INTO Student (Name, Age, Grade) VALUES
 ('Roop', 32, 10),
 ('Adithya', 27, 9),
 ('Advik', 23, 8),
