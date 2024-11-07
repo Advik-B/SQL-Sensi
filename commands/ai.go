@@ -94,7 +94,9 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 		return
 	}
 	// Send the response
-	msg := telegram.NewMessage(message.Chat.ID, responseToString(res))
+	msg := telegram.NewMessage(message.Chat.ID, "")
+	msg.Text = parseMarkDown(responseToString(res))
+	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
 	// Save the chat history
 	chatHistory[message.Chat.ID] = append(chatHistory[message.Chat.ID], cs.History...)
@@ -145,45 +147,87 @@ func SetAPIKey(bot *telegram.BotAPI, message *telegram.Message) {
 	bot.Send(msg)
 }
 
-
 func clearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery) {
-	if !accountCreateReminder(bot, query.Message) {
-		return
-	}
 	account := management.UserFromTelegram(query.From, &DB)
 	account.GeminiAPIKey = ""
 	management.UpdateUser(&account, &DB)
 	msg := telegram.NewMessage(query.Message.Chat.ID, "Your Gemini API key has been cleared")
 	bot.Send(msg)
+	// Prevent the button from being clicked again
+	
 }
 
 func cancelClearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery) {
 	// Do nothing
 }
 
+func parseMarkDown(text string) string {
+	// Escape characters as per MarkdownV2 requirements
+	escapeCharacters := func(text string) string {
+		replacer := strings.NewReplacer(
+			"_", "\\_",
+			"*", "\\*",
+			"[", "\\[",
+			"]", "\\]",
+			"(", "\\(",
+			")", "\\)",
+			"~", "\\~",
+			"`", "\\`",
+			">", "\\>",
+			"#", "\\#",
+			"+", "\\+",
+			"-", "\\-",
+			"=", "\\=",
+			"|", "\\|",
+			"{", "\\{",
+			"}", "\\}",
+			".", "\\.",
+			"!", "\\!",
+		)
+		return replacer.Replace(text)
+	}
+
+	// Escape backslashes and backticks inside code blocks
+	escapeCodeBlock := func(text string) string {
+		replacer := strings.NewReplacer(
+			"\\", "\\\\",
+			"`", "\\`",
+		)
+		return replacer.Replace(text)
+	}
+
+	// Escape characters in the text
+	escapedText := escapeCharacters(text)
+
+	// Handle inline code blocks
+	escapedText = strings.ReplaceAll(escapedText, "`", "`"+escapeCodeBlock("`")+"`")
+
+	return escapedText
+}
+
 func init() {
 	Register(
 		Command{
-			Name: 	  "ai",
+			Name:        "ai",
 			Description: "Generate an AI response from your query",
-			Handler: ai,
-			Usage: "/ai <text>\nExample: `/ai Give me a command to create an employee table with id, name, and age columns`",
+			Handler:     ai,
+			Usage:       "/ai <text>\nExample: `/ai Give me a command to create an employee table with id, name, and age columns`",
 		},
 	)
 	Register(
 		Command{
-			Name: 	  "clear",
+			Name:        "clear",
 			Description: "Clear the chat history with the AI",
-			Handler: clearChatHistory,
-			Usage: "/clear",
+			Handler:     clearChatHistory,
+			Usage:       "/clear",
 		},
 	)
 	Register(
 		Command{
-			Name: 	  "apikey",
+			Name:        "apikey",
 			Description: "Set your Gemini API key",
-			Handler: SetAPIKey,
-			Usage: "/apikey <API key> or /apikey to clear the API key",
+			Handler:     SetAPIKey,
+			Usage:       "/apikey <API key> or /apikey to clear the API key",
 		},
 	)
 	RegisterCallback(
