@@ -8,7 +8,10 @@ require (
 	github.com/joho/godotenv v1.5.1
 )
 
+require github.com/mattn/go-runewidth v0.0.9 // indirect
+
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/olekukonko/tablewriter v0.0.5
 	golang.org/x/crypto v0.28.0
 )
