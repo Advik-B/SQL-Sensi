@@ -14,7 +14,13 @@ type Command struct {
 	Usage       string
 }
 
+type Callback struct {
+	Name    string
+	Handler func(*telegram.BotAPI, *telegram.CallbackQuery)
+}
+
 var Commands = []Command{}
+var Callbacks = []Callback{}
 var DB database.MySQL
 
 func (c Command) String() string {
@@ -28,6 +34,11 @@ func Register(command Command) {
 	Commands = append(Commands, command)
 }
 
+func RegisterCallback(callback Callback) {
+	log.Printf("Registering callback: %s", callback.Name)
+	Callbacks = append(Callbacks, callback)
+}
+
 func Handle(bot *telegram.BotAPI, message *telegram.Message) {
 	for _, command := range Commands {
 		if message.Command() == command.Name {
@@ -37,4 +48,19 @@ func Handle(bot *telegram.BotAPI, message *telegram.Message) {
 		}
 	}
 	log.Printf("Command /%s not found", message.Command())
+}
+
+func HandleCallback(bot *telegram.BotAPI, update *telegram.Update) {
+	if update.CallbackQuery == nil {
+		log.Printf("A callback query is expected, but got nil?")
+		return
+	}
+	for _, callback := range Callbacks {
+		if update.CallbackQuery.Data == callback.Name {
+			log.Printf("Invoking callback %s", callback.Name)
+			callback.Handler(bot, update.CallbackQuery)
+			return
+		}
+	}
+	log.Printf("Callback %s not found", update.CallbackQuery.Data)
 }
