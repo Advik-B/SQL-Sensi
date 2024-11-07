@@ -102,15 +102,20 @@ func SetAPIKey(bot *telegram.BotAPI, message *telegram.Message) {
 	account := management.UserFromTelegram(message.From, &DB)
 	newAPIKey := message.CommandArguments()
 	if strings.TrimSpace(newAPIKey) == "" {
+		if strings.TrimSpace(account.GeminiAPIKey) == "" {
+			msg := telegram.NewMessage(message.Chat.ID, "You don't have a Gemini API key set, nothing to clear")
+			bot.Send(msg)
+			return
+		}
 		msg := telegram.NewMessage(message.Chat.ID, "Are you sure you want to clear your Gemini API key? This action is irreversible.")
 		// Add a button to confirm the action (linked to the clearAPICallback function)
 		msg.ReplyMarkup = telegram.NewInlineKeyboardMarkup(
 			telegram.NewInlineKeyboardRow(
 				telegram.NewInlineKeyboardButtonData("Yes", "clearAPI"),
-				telegram.NewInlineKeyboardButtonData("No", "cancel"),
+				telegram.NewInlineKeyboardButtonData("No", "cancelAPI"),
 			),
 		)
-		
+
 		bot.Send(msg)
 		return
 	}
@@ -130,6 +135,10 @@ func clearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery) {
 	management.UpdateUser(&account, &DB)
 	msg := telegram.NewMessage(query.Message.Chat.ID, "Your Gemini API key has been cleared")
 	bot.Send(msg)
+}
+
+func cancelClearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery) {
+	// Do nothing
 }
 
 func init() {
@@ -155,6 +164,18 @@ func init() {
 			Description: "Set your Gemini API key",
 			Handler: SetAPIKey,
 			Usage: "/apikey <API key> or /apikey to clear the API key",
+		},
+	)
+	RegisterCallback(
+		Callback{
+			Name:    "clearAPI",
+			Handler: clearAPICallback,
+		},
+	)
+	RegisterCallback(
+		Callback{
+			Name:    "cancelAPI",
+			Handler: cancelClearAPICallback,
 		},
 	)
 }
