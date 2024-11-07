@@ -18,7 +18,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	bot.Debug = true
+	// bot.Debug = true
 	db, err := database.FromEnvironment()
 	if err != nil {
 		log.Panic(err)
