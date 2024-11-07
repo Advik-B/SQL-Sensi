@@ -98,7 +98,7 @@ func init() {
 	Register(
 		Command{
 			Name: 	  "ai",
-			Description: "Generate an AI response",
+			Description: "Generate an AI response from your query",
 			Handler: ai,
 			Usage: "/ai <text>\nExample: `/ai Give me a command to create an employee table with id, name, and age columns`",
 		},
