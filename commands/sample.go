@@ -104,7 +104,6 @@ func sample(bot *telegram.BotAPI, message *telegram.Message) {
 	}
 	user := management.UserFromTelegram(message.From, &DB)
 	user_db := user.GetDB(&DB)
-	bot.Send(telegram.NewMessage(message.Chat.ID, "Passworld: "+user.SQLPassword))
 	user_db.Connect()
 	defer user_db.Disconnect()
 	log.Println("Creating sample tables")
