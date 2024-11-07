@@ -69,6 +69,30 @@ INSERT INTO Department (DepartName) VALUES
 ('Research and Development'),
 ('Quality Assurance'),
 ('Logistics');
+
+INSERT INTO Student (Name, Age, Grade) VALUES
+('Roop', 32, 10),
+('Adithya', 27, 9),
+('Advik', 23, 8),
+('Pratibha', 29, 9),
+('Ashvitha', 24, 8),
+('Dhruv', 30, 9),
+('Dhariya Jaishwal', 35, 10),
+('Chatur', 40, 11),
+('Sowlaasya', 20, 7),
+('Geetika', 45, 12),
+('Pooja', 22, 8),
+('Prachi', 28, 9),
+('Sakshi', 35, 10),
+('John Doe', 30, 9),
+('Jane Doe', 25, 8),
+('Alice', 22, 7),
+('Bob', 28, 8),
+('Charlie', 35, 9),
+('David', 40, 10),
+('Eve', 20, 6),
+('Frank', 45, 11);
+
 `
 
 func sample(bot *telegram.BotAPI, message *telegram.Message) {
