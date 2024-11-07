@@ -142,7 +142,7 @@ func sample(bot *telegram.BotAPI, message *telegram.Message) {
 func init() {
 	Register(Command{
 		Name:        "sample",
-		Description: "Get a few sample tables \\(filled with sample data\\) to play with",
+		Description: "Get a few sample tables \\(filled with sample data\\) to play",
 		Handler:     sample,
 		Usage:       "/sample",
 	})
