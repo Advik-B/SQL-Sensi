@@ -154,7 +154,7 @@ func clearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery) {
 	msg := telegram.NewMessage(query.Message.Chat.ID, "Your Gemini API key has been cleared")
 	bot.Send(msg)
 	// Prevent the button from being clicked again
-	
+
 }
 
 func cancelClearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery) {
@@ -225,7 +225,7 @@ func init() {
 	Register(
 		Command{
 			Name:        "apikey",
-			Description: "Set your Gemini API key",
+			Description: "\\(advanced\\) Set/Clear your Gemini API key",
 			Handler:     SetAPIKey,
 			Usage:       "/apikey <API key> or /apikey to clear the API key",
 		},
