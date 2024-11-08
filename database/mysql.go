@@ -102,13 +102,12 @@ func (m *MySQL) CreateAndUseDB(name string) error {
 // isValidIdentifier checks if a database/table name is valid
 func isValidIdentifier(name string) bool {
 	// Basic validation for MySQL identifiers
-	// Only allow alphanumeric characters, underscores, and hyphens
+	// Only allow alphanumeric characters, underscores
 	for _, char := range name {
 		if !((char >= 'a' && char <= 'z') ||
 			(char >= 'A' && char <= 'Z') ||
 			(char >= '0' && char <= '9') ||
-			char == '_' ||
-			char == '-') {
+			char == '_') {
 			return false
 		}
 	}
