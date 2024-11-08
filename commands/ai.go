@@ -88,8 +88,8 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 
 	// Send the response
 	msg := telegram.NewMessage(message.Chat.ID, "")
-	msg.Text = parseMarkDown(responseToString(res))
-	msg.ParseMode = "MarkdownV2"
+	msg.Text = responseToString(res)
+	// msg.ParseMode = "Markdown"
 	bot.Send(msg)
 
 	// Update session history
