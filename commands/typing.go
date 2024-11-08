@@ -7,7 +7,7 @@ import (
 )
 
 // showTyping shows the typing indicator and returns a function to stop it
-func showTyping(bot *telegram.BotAPI, chatID int64) func() {
+func showTyping(bot *telegram.BotAPI, chatID int64) func() bool {
 	timer := time.AfterFunc(time.Second, func() {
 		bot.Send(telegram.NewChatAction(chatID, telegram.ChatTyping))
 	})
