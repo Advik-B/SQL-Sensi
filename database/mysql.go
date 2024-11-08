@@ -37,11 +37,11 @@ func (m *MySQL) Connect() error {
 */
 func (m *MySQL) WhereAmI() string {
 	whereami, err := m.Conn.Query("SELECT DATABASE()")
-	defer whereami.Close()
 	if err != nil {
 		log.Println(err)
 		return "<ERROR>"
 	}
+	defer whereami.Close()
 	var name string = "<NO DATABASE>"
 	for whereami.Next() {
 		whereami.Scan(&name)
