@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
-
+	"sync"
 	"time"
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -15,7 +15,10 @@ import (
 	"sql.sensi/management"
 )
 
-var chatHistory = make(map[int64][]*genai.Content)
+var (
+	chatHistory = make(map[int64][]*genai.Content)
+	chatMutex   sync.RWMutex
+)
 
 func responseToString(resp *genai.GenerateContentResponse) string {
 	var str string
@@ -79,10 +82,17 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	// Generate AI
 	model := client.GenerativeModel("gemini-1.5-pro")
 	cs := model.StartChat()
+
+	// Get chat history with read lock
+	chatMutex.RLock()
+	history := chatHistory[message.Chat.ID]
+	chatMutex.RUnlock()
+
 	// If the user has a chat history, use it
-	if len(chatHistory[message.Chat.ID]) > 0 {
-		cs.History = chatHistory[message.Chat.ID]
+	if len(history) > 0 {
+		cs.History = history
 	}
+
 	res, err := cs.SendMessage(ctx, genai.Text(text))
 	if err != nil {
 		log.Println("Error sending message to AI")
@@ -98,8 +108,11 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	msg.Text = parseMarkDown(responseToString(res))
 	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
-	// Save the chat history
+
+	// Save the chat history with write lock
+	chatMutex.Lock()
 	chatHistory[message.Chat.ID] = append(chatHistory[message.Chat.ID], cs.History...)
+	chatMutex.Unlock()
 
 	// Close the client
 	client.Close()
@@ -111,8 +124,11 @@ func clearChatHistory(bot *telegram.BotAPI, message *telegram.Message) {
 	if !accountCreateReminder(bot, message) {
 		return
 	}
-	// Set the chat history to an empty array
+	// Set the chat history to an empty array with write lock
+	chatMutex.Lock()
 	chatHistory[message.Chat.ID] = []*genai.Content{}
+	chatMutex.Unlock()
+
 	msg := telegram.NewMessage(message.Chat.ID, "Chat history cleared")
 	bot.Send(msg)
 }
@@ -162,35 +178,35 @@ func cancelClearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery)
 }
 
 func parseMarkDown(text string) string {
-    var result strings.Builder
-    inCode := false
+	var result strings.Builder
+	inCode := false
 
-    for i := 0; i < len(text); i++ {
-        ch := text[i]
-        switch ch {
-        case '`':
-            if inCode {
-                result.WriteString("\\`")
-            } else {
-                result.WriteString("`")
-            }
-            inCode = !inCode
-        case '\\', '_', '*', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!':
-            if inCode {
-                if ch == '\\' {
-                    result.WriteString("\\\\")
-                } else {
-                    result.WriteByte(ch)
-                }
-            } else {
-                result.WriteByte('\\')
-                result.WriteByte(ch)
-            }
-        default:
-            result.WriteByte(ch)
-        }
-    }
-    return result.String()
+	for i := 0; i < len(text); i++ {
+		ch := text[i]
+		switch ch {
+		case '`':
+			if inCode {
+				result.WriteString("\\`")
+			} else {
+				result.WriteString("`")
+			}
+			inCode = !inCode
+		case '\\', '_', '*', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!':
+			if inCode {
+				if ch == '\\' {
+					result.WriteString("\\\\")
+				} else {
+					result.WriteByte(ch)
+				}
+			} else {
+				result.WriteByte('\\')
+				result.WriteByte(ch)
+			}
+		default:
+			result.WriteByte(ch)
+		}
+	}
+	return result.String()
 }
 
 func init() {
