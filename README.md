@@ -19,3 +19,35 @@ Here's what SQL-Sensi currently offers and what's coming soon:
 - **Performance Analytics**: Get insights into your query performance and optimization suggestions
 - **Custom Datasets**: Import your own datasets for practice
 - **Interactive Tutorials**: Step-by-step SQL learning modules with hands-on exercises
+
+## Build and run
+
+### Prerequisites
+- Go compiler installed
+
+### Download the source code
+```
+git clone https://github.com/Advik-B/SQL-Sensi.git
+cd sql-sensi
+```
+
+### Build the bot
+```
+go build -ldflags="-s -w" -trimpath
+```
+
+### Setup Enviroment variables in a `.env` file or directly thru the environment
+
+| Variable Name | Description | Importance |
+|---------------|-------------|----------|
+| `DB_HOST` | The mysql database host | REQUIRED |
+| `DB_USER` | The mysql database user to connect with | REQUIRED |
+| `DB_PASS` | The mysql database password | REQUIRED |
+| `TELEGRAM_API_KEY` | The telegram bot token | REQUIRED |
+| `GEMINI_API_KEY` | The Gemini API key for ai features | OPTIONAL |
+
+### And run the bot
+
+```
+./sql.sensi
+```
