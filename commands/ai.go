@@ -162,47 +162,35 @@ func cancelClearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery)
 }
 
 func parseMarkDown(text string) string {
-	// Escape characters as per MarkdownV2 requirements
-	escapeCharacters := func(text string) string {
-		replacer := strings.NewReplacer(
-			"_", "\\_",
-			"*", "\\*",
-			"[", "\\[",
-			"]", "\\]",
-			"(", "\\(",
-			")", "\\)",
-			"~", "\\~",
-			"`", "\\`",
-			">", "\\>",
-			"#", "\\#",
-			"+", "\\+",
-			"-", "\\-",
-			"=", "\\=",
-			"|", "\\|",
-			"{", "\\{",
-			"}", "\\}",
-			".", "\\.",
-			"!", "\\!",
-		)
-		return replacer.Replace(text)
-	}
+    var result strings.Builder
+    inCode := false
 
-	// Escape backslashes and backticks inside code blocks
-	escapeCodeBlock := func(text string) string {
-		replacer := strings.NewReplacer(
-			"\\", "\\\\",
-			"`", "\\`",
-		)
-		return replacer.Replace(text)
-	}
-
-	// Escape characters in the text
-	escapedText := escapeCharacters(text)
-
-	// Handle inline code blocks
-	escapedText = strings.ReplaceAll(escapedText, "`", "`"+escapeCodeBlock("`")+"`")
-
-	return escapedText
+    for i := 0; i < len(text); i++ {
+        ch := text[i]
+        switch ch {
+        case '`':
+            if inCode {
+                result.WriteString("\\`")
+            } else {
+                result.WriteString("`")
+            }
+            inCode = !inCode
+        case '\\', '_', '*', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!':
+            if inCode {
+                if ch == '\\' {
+                    result.WriteString("\\\\")
+                } else {
+                    result.WriteByte(ch)
+                }
+            } else {
+                result.WriteByte('\\')
+                result.WriteByte(ch)
+            }
+        default:
+            result.WriteByte(ch)
+        }
+    }
+    return result.String()
 }
 
 func init() {
