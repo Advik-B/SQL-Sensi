@@ -18,13 +18,3 @@ func reset_password(bot *telegram.BotAPI, message *telegram.Message) {
 	bot.Send(telegram.NewMessage(message.Chat.ID, "Password reset successfully, use /credentials to view your new password"))
 }
 
-func init() {
-	Register(
-		Command{
-			Name: "resetpw",
-			Description: "Reset your database password",
-			Handler: reset_password,
-			Usage: "/resetpw",
-		},
-	)
-}
