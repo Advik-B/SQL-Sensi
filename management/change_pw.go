@@ -48,7 +48,7 @@ func ResetPassword(user* User, db* database.MySQL) error {
 		SET sql_password = ?
 		WHERE id = ?
 	`
-	_, err = db.Conn.Exec(query, newpw, user.ID)
+	_, err = db.Conn.Exec(query, string(newpw)[:20], user.ID)
 	if err != nil {
 		return err
 	}
