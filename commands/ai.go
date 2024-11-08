@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"sync"
-	"time"
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/generative-ai-go/genai"
