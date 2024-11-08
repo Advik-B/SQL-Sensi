@@ -28,13 +28,13 @@ func (m *MySQL) Connect() error {
 	return nil
 }
 
-/* 
+/*
 	Returns the current database name
 
 	if there is an error, it will return "<ERROR>"
-	
+
 	if we are not inside a database, it will return "<NO DATABASE>"
- */
+*/
 func (m *MySQL) WhereAmI() string {
 	whereami, err := m.Conn.Query("SELECT DATABASE()")
 	if err != nil {
@@ -52,8 +52,12 @@ func (m *MySQL) UseDatabase(name string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Use the database
-	_, err := m.Conn.Exec(fmt.Sprintf("USE %s", name))
+	// Use the database - Note: Database names cannot be parameterized in MySQL
+	// However, we'll validate the name to prevent SQL injection
+	if !isValidIdentifier(name) {
+		return fmt.Errorf("invalid database name")
+	}
+	_, err := m.Conn.Exec("USE " + name)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -67,8 +71,12 @@ func (m *MySQL) CreateDatabase(name string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Create the database
-	_, err := m.Conn.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", name))
+	// Create the database - Note: Database names cannot be parameterized in MySQL
+	// However, we'll validate the name to prevent SQL injection
+	if !isValidIdentifier(name) {
+		return fmt.Errorf("invalid database name")
+	}
+	_, err := m.Conn.Exec("CREATE DATABASE IF NOT EXISTS " + name)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -90,6 +98,22 @@ func (m *MySQL) CreateAndUseDB(name string) error {
 	return nil
 }
 
+// isValidIdentifier checks if a database/table name is valid
+func isValidIdentifier(name string) bool {
+	// Basic validation for MySQL identifiers
+	// Only allow alphanumeric characters, underscores, and hyphens
+	for _, char := range name {
+		if !((char >= 'a' && char <= 'z') ||
+			(char >= 'A' && char <= 'Z') ||
+			(char >= '0' && char <= '9') ||
+			char == '_' ||
+			char == '-') {
+			return false
+		}
+	}
+	return len(name) > 0
+}
+
 // Disconnect disconnects from the MySQL database
 func (m *MySQL) Disconnect() error {
 	// Disconnect from the database
@@ -106,8 +130,12 @@ func (m *MySQL) CreateTable(name string, columns []string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Create the table
-	_, err := m.Conn.Exec(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", name, strings.Join(columns, ", ")))
+	if !isValidIdentifier(name) {
+		return fmt.Errorf("invalid table name")
+	}
+	// Create the table - Note: Table names and column definitions cannot be parameterized
+	// However, we validate the identifiers
+	_, err := m.Conn.Exec("CREATE TABLE IF NOT EXISTS " + name + " (" + strings.Join(columns, ", ") + ")")
 	if err != nil {
 		log.Println(err)
 		return err
@@ -119,8 +147,25 @@ func (m *MySQL) Insert(table string, columns []string, values []string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Insert a row into the table
-	_, err := m.Conn.Exec(fmt.Sprintf("INSERT IGNORE INTO %s (%s) VALUES (%s)", table, strings.Join(columns, ", "), strings.Join(values, ", ")))
+	if !isValidIdentifier(table) {
+		return fmt.Errorf("invalid table name")
+	}
+
+	// Create placeholders for values (?)
+	placeholders := make([]string, len(values))
+	for i := range values {
+		placeholders[i] = "?"
+	}
+
+	query := "INSERT IGNORE INTO " + table + " (" + strings.Join(columns, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ")"
+
+	// Convert values to []interface{}
+	args := make([]interface{}, len(values))
+	for i, v := range values {
+		args[i] = v
+	}
+
+	_, err := m.Conn.Exec(query, args...)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -132,8 +177,16 @@ func (m *MySQL) Select(table string, columns []string, where string) (*sql.Rows,
 	if m.Conn == nil {
 		return nil, fmt.Errorf("Database connection is nil")
 	}
-	// Select rows from the table
-	rows, err := m.Conn.Query(fmt.Sprintf("SELECT %s FROM %s WHERE %s", strings.Join(columns, ", "), table, where))
+	if !isValidIdentifier(table) {
+		return nil, fmt.Errorf("invalid table name")
+	}
+
+	query := "SELECT " + strings.Join(columns, ", ") + " FROM " + table
+	if where != "" {
+		query += " WHERE " + where
+	}
+
+	rows, err := m.Conn.Query(query)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -145,8 +198,28 @@ func (m *MySQL) Update(table string, columns []string, values []string, where st
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Update rows in the table
-	_, err := m.Conn.Exec(fmt.Sprintf("UPDATE %s SET %s WHERE %s", table, strings.Join(columns, ", "), where))
+	if !isValidIdentifier(table) {
+		return fmt.Errorf("invalid table name")
+	}
+
+	// Create SET clause with placeholders
+	setClause := make([]string, len(columns))
+	for i, col := range columns {
+		setClause[i] = col + " = ?"
+	}
+
+	query := "UPDATE " + table + " SET " + strings.Join(setClause, ", ")
+	if where != "" {
+		query += " WHERE " + where
+	}
+
+	// Convert values to []interface{}
+	args := make([]interface{}, len(values))
+	for i, v := range values {
+		args[i] = v
+	}
+
+	_, err := m.Conn.Exec(query, args...)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -158,8 +231,16 @@ func (m *MySQL) Delete(table string, where string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Delete rows from the table
-	_, err := m.Conn.Exec(fmt.Sprintf("DELETE FROM %s WHERE %s", table, where))
+	if !isValidIdentifier(table) {
+		return fmt.Errorf("invalid table name")
+	}
+
+	query := "DELETE FROM " + table
+	if where != "" {
+		query += " WHERE " + where
+	}
+
+	_, err := m.Conn.Exec(query)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -171,8 +252,11 @@ func (m *MySQL) DropTable(name string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Drop the table
-	_, err := m.Conn.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s", name))
+	if !isValidIdentifier(name) {
+		return fmt.Errorf("invalid table name")
+	}
+
+	_, err := m.Conn.Exec("DROP TABLE IF EXISTS " + name)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -184,8 +268,11 @@ func (m *MySQL) DropDatabase(name string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Drop the database
-	_, err := m.Conn.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %s", name))
+	if !isValidIdentifier(name) {
+		return fmt.Errorf("invalid database name")
+	}
+
+	_, err := m.Conn.Exec("DROP DATABASE IF EXISTS " + name)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -197,8 +284,11 @@ func (m *MySQL) TruncateTable(name string) error {
 	if m.Conn == nil {
 		return fmt.Errorf("Database connection is nil")
 	}
-	// Truncate the table
-	_, err := m.Conn.Exec(fmt.Sprintf("TRUNCATE TABLE %s", name))
+	if !isValidIdentifier(name) {
+		return fmt.Errorf("invalid table name")
+	}
+
+	_, err := m.Conn.Exec("TRUNCATE TABLE " + name)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -210,7 +300,6 @@ func (m *MySQL) ShowDatabases() (*sql.Rows, error) {
 	if m.Conn == nil {
 		return nil, fmt.Errorf("Database connection is nil")
 	}
-	// Show the databases
 	rows, err := m.Conn.Query("SHOW DATABASES")
 	if err != nil {
 		log.Println(err)
@@ -223,7 +312,6 @@ func (m *MySQL) ShowTables() (*sql.Rows, error) {
 	if m.Conn == nil {
 		return nil, fmt.Errorf("Database connection is nil")
 	}
-	// Show the tables
 	rows, err := m.Conn.Query("SHOW TABLES")
 	if err != nil {
 		log.Println(err)
@@ -236,8 +324,11 @@ func (m *MySQL) DescribeTable(name string) (*sql.Rows, error) {
 	if m.Conn == nil {
 		return nil, fmt.Errorf("Database connection is nil")
 	}
-	// Describe the table
-	rows, err := m.Conn.Query(fmt.Sprintf("DESCRIBE %s", name))
+	if !isValidIdentifier(name) {
+		return nil, fmt.Errorf("invalid table name")
+	}
+
+	rows, err := m.Conn.Query("DESCRIBE " + name)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -249,7 +340,6 @@ func (m *MySQL) Query(query string) (*sql.Rows, error) {
 	if m.Conn == nil {
 		return nil, fmt.Errorf("Database connection is nil")
 	}
-	// Execute a custom query
 	rows, err := m.Conn.Query(query)
 	if err != nil {
 		log.Println(err)
@@ -259,7 +349,6 @@ func (m *MySQL) Query(query string) (*sql.Rows, error) {
 }
 
 func (m *MySQL) Ping() error {
-	// Ping the database
 	err := m.Conn.Ping()
 	if err != nil {
 		log.Println(err)
@@ -269,6 +358,5 @@ func (m *MySQL) Ping() error {
 }
 
 func (m *MySQL) Connection() *sql.DB {
-	// Return the connection
 	return m.Conn
 }
