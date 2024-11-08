@@ -15,10 +15,7 @@ import (
 	"sql.sensi/management"
 )
 
-var (
-	chatHistory = make(map[int64][]*genai.Content)
-	chatMutex   sync.RWMutex
-)
+var sessions = NewSessionManager()
 
 func responseToString(resp *genai.GenerateContentResponse) string {
 	var str string
@@ -36,20 +33,10 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	if !accountCreateReminder(bot, message) {
 		return
 	}
+
 	// Show the typing indicator
-	done := make(chan struct{})  
-    go func() {  
-        ticker := time.NewTicker(time.Second)  
-        defer ticker.Stop()  
-        for {  
-            select {  
-            case <-done:  
-                return  
-            case <-ticker.C:  
-                bot.Send(telegram.NewChatAction(message.Chat.ID, telegram.ChatTyping))  
-            }  
-        }  
-    }()
+	stopTyping := showTyping(bot, message.Chat.ID)
+	defer stopTyping()
 
 	// Get the user's Gemini API key
 	account := management.UserFromTelegram(message.From, &DB)
@@ -67,6 +54,7 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 		log.Println(err)
 		return
 	}
+	defer client.Close()
 
 	// Get the message text
 	text := message.CommandArguments()
@@ -83,14 +71,10 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 	model := client.GenerativeModel("gemini-1.5-pro")
 	cs := model.StartChat()
 
-	// Get chat history with read lock
-	chatMutex.RLock()
-	history := chatHistory[message.Chat.ID]
-	chatMutex.RUnlock()
-
-	// If the user has a chat history, use it
-	if len(history) > 0 {
-		cs.History = history
+	// Get or create chat session
+	session := sessions.GetOrCreate(message.Chat.ID)
+	if len(session.History) > 0 {
+		cs.History = session.History
 	}
 
 	res, err := cs.SendMessage(ctx, genai.Text(text))
@@ -103,20 +87,16 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 		bot.Send(msg)
 		return
 	}
+
 	// Send the response
 	msg := telegram.NewMessage(message.Chat.ID, "")
 	msg.Text = parseMarkDown(responseToString(res))
 	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
 
-	// Save the chat history with write lock
-	chatMutex.Lock()
-	chatHistory[message.Chat.ID] = append(chatHistory[message.Chat.ID], cs.History...)
-	chatMutex.Unlock()
+	// Update session history
+	session.History = cs.History
 
-	// Close the client
-	client.Close()
-	close(done)
 	log.Println("AI response sent")
 }
 
@@ -124,11 +104,8 @@ func clearChatHistory(bot *telegram.BotAPI, message *telegram.Message) {
 	if !accountCreateReminder(bot, message) {
 		return
 	}
-	// Set the chat history to an empty array with write lock
-	chatMutex.Lock()
-	chatHistory[message.Chat.ID] = []*genai.Content{}
-	chatMutex.Unlock()
 
+	sessions.Clear(message.Chat.ID)
 	msg := telegram.NewMessage(message.Chat.ID, "Chat history cleared")
 	bot.Send(msg)
 }
