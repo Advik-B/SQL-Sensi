@@ -22,6 +22,13 @@ Here's what SQL-Sensi currently offers and what's coming soon:
 
 ## Build and run
 
+### Direct download
+
+📍You can directly download the linux server binary from [releases](https://github.com/Advik-B/SQL-Sensi/releases/latest)
+
+Linux Binary: [sql.sensi](https://github.com/Advik-B/SQL-Sensi/releases/download/latest/sql.sensi)
+Linux Binary (7-Zipped): [sql.sensi.7z](https://github.com/Advik-B/SQL-Sensi/releases/download/latest/sql.sensi.7z)
+
 ### Prerequisites
 - Go compiler installed
 
@@ -33,7 +40,7 @@ cd sql-sensi
 
 ### Build the bot
 ```
-go build -ldflags="-s -w" -trimpath
+go build -gcflags="all=-l -B" -ldflags="-s -w -extldflags '-static'" -trimpath -o sql.sensi
 ```
 
 ### Setup Enviroment variables in a `.env` file or directly thru the environment
