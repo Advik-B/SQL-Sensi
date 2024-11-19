@@ -27,6 +27,7 @@ Here's what SQL-Sensi currently offers and what's coming soon:
 📍You can directly download the linux server binary from [releases](https://github.com/Advik-B/SQL-Sensi/releases/latest)
 
 Linux Binary: [sql.sensi](https://github.com/Advik-B/SQL-Sensi/releases/download/latest/sql.sensi)
+
 Linux Binary (7-Zipped): [sql.sensi.7z](https://github.com/Advik-B/SQL-Sensi/releases/download/latest/sql.sensi.7z)
 
 ### Prerequisites
