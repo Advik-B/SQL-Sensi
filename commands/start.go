@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Advik-B/SQL-Sensi/management"
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"sql.sensi/management"
 )
 
 var WelcomeBackMessage = `
@@ -39,7 +39,6 @@ func start(bot *telegram.BotAPI, message *telegram.Message) {
 func welcome(bot *telegram.BotAPI, message *telegram.Message) {
 	bot.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf(WelcomeMessage, message.From.FirstName)))
 }
-
 
 func init() {
 	Register(Command{

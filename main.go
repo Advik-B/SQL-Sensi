@@ -6,9 +6,9 @@ import (
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	env "github.com/joho/godotenv"
-	"sql.sensi/commands"
-	"sql.sensi/database"
-	"sql.sensi/management"
+	"github.com/Advik-B/SQL-Sensi/commands"
+	"github.com/Advik-B/SQL-Sensi/database"
+	"github.com/Advik-B/SQL-Sensi/management"
 )
 
 func main() {

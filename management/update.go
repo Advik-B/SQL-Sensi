@@ -3,7 +3,7 @@ package management
 import (
 	"fmt"
 
-	"sql.sensi/database"
+	"github.com/Advik-B/SQL-Sensi/database"
 )
 
 func UpdateUser(user *User, db *database.MySQL) error {

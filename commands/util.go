@@ -1,7 +1,9 @@
 package commands
 
-import telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-import "sql.sensi/management"
+import (
+	"github.com/Advik-B/SQL-Sensi/management"
+	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+)
 
 func accountCreateReminder(bot *telegram.BotAPI, message *telegram.Message) bool {
 	if !management.UserExists(&DB, message.From.ID) {

@@ -1,4 +1,4 @@
-module sql.sensi
+module github.com/Advik-B/SQL-Sensi
 
 go 1.23.2
 

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Advik-B/SQL-Sensi/database"
 	"golang.org/x/crypto/bcrypt"
-	"sql.sensi/database"
 )
 
 func ChangePassword(user *User, newPassword string, db *database.MySQL) error {
@@ -34,7 +34,7 @@ func ChangePassword(user *User, newPassword string, db *database.MySQL) error {
 	return nil
 }
 
-func ResetPassword(user* User, db* database.MySQL) error {
+func ResetPassword(user *User, db *database.MySQL) error {
 	if db.Conn == nil {
 		return fmt.Errorf("database connection is nil")
 	}
