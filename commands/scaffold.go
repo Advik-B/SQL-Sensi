@@ -4,7 +4,7 @@ import (
 	"log"
 
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"sql.sensi/database"
+	"github.com/Advik-B/SQL-Sensi/database"
 )
 
 type Command struct {

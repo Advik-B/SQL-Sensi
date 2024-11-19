@@ -1,7 +1,7 @@
 package management
 
 import (
-	"sql.sensi/database"
+	"github.com/Advik-B/SQL-Sensi/database"
 )
 
 func PrepareDB(db *database.MySQL) {
@@ -39,6 +39,5 @@ func PrepareDB(db *database.MySQL) {
 	db.Disconnect()
 
 	db.Database = "telegram" // Set the database to the telegram database
-	db.Connect() 		   // Reconnect to the telegram database
+	db.Connect()             // Reconnect to the telegram database
 }
-

@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"sql.sensi/management"
+	"github.com/Advik-B/SQL-Sensi/management"
 	"log"
 	"strings"
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"

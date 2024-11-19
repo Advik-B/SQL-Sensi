@@ -10,7 +10,7 @@ import (
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
-	"sql.sensi/management"
+	"github.com/Advik-B/SQL-Sensi/management"
 )
 
 var sessions = NewSessionManager()

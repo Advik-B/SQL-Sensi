@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Advik-B/SQL-Sensi/management"
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/olekukonko/tablewriter"
-	"sql.sensi/management"
 	// "strings"
 )
 
@@ -21,7 +21,7 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 	// Join the arguments to form a single string
 	query := message.Text
 	query = strings.TrimPrefix(query, "/sql")
-	
+
 	if strings.TrimSpace(query) == "" {
 		msg.Text = "Please provide a query"
 		bot.Send(msg)
@@ -92,13 +92,13 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 		table.Append(strValues)
 		rowCount++
 		totalRowCount++
-	
+
 		if rowCount >= maxRows {
 			table.Render()
 			msg.Text = "```\n" + dataIO.String() + "\n```"
 			msg.ParseMode = "MarkdownV2"
 			bot.Send(msg)
-	
+
 			// Reset the table and dataIO for the next batch of rows
 			dataIO.Reset()
 			table = tablewriter.NewWriter(&dataIO)
@@ -110,7 +110,7 @@ func sql(bot *telegram.BotAPI, message *telegram.Message) {
 		bot.Send(msg)
 		return
 	}
-	
+
 	// Render and send any remaining rows
 	if rowCount > 0 {
 		table.Render()
