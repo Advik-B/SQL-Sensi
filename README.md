@@ -24,11 +24,12 @@ Here's what SQL-Sensi currently offers and what's coming soon:
 
 ### Direct download
 
-📍You can directly download the linux server binary from [releases](https://github.com/Advik-B/SQL-Sensi/releases/latest)
+📍You can directly download the linux binary from [releases](https://github.com/Advik-B/SQL-Sensi/releases/latest)
+---
 
-> Linux Binary: [sql.sensi](https://github.com/Advik-B/SQL-Sensi/releases/sql.sensi)
->
-> Linux Binary (7-Zipped): [sql.sensi.7z](https://github.com/Advik-B/SQL-Sensi/releases/sql.sensi.7z)
+🐧 Linux Binary: [sql.sensi](https://github.com/Advik-B/SQL-Sensi/releases/latest/download/sql.sensi)
+
+🗜️ Linux Binary (7-Zipped): [sql.sensi.7z](https://github.com/Advik-B/SQL-Sensi/releases/latest/download/sql.sensi.7z)
 
 ### Prerequisites
 - Go compiler installed
