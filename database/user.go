@@ -7,7 +7,7 @@ import (
 
 func (m *MySQL) CreateUser(username string, password string) error {
 	// Log the action
-	log.Printf("Creating user %s with password %s", username, password)
+	log.Printf("Creating user %s", username)
 	// Construct the query using the escaped values
 	query := fmt.Sprintf("CREATE USER '%s'@'%%' IDENTIFIED BY '%s'", username, password)
 
