@@ -8,6 +8,4 @@ services:
       - DB_PASS=${DB_PASS}
       - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-    ports:
-      - "8080:8080"
     restart: unless-stopped
