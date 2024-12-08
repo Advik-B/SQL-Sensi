@@ -73,9 +73,7 @@ To deploy SQL-Sensi using Docker Compose, follow these steps:
     docker-compose up -d
     ```
 
-## Build and run
-
-### Direct download
+## Direct download
 
 > [!NOTE]
 > You can directly download the linux binary from [releases](https://github.com/Advik-B/SQL-Sensi/releases/latest)
@@ -83,6 +81,8 @@ To deploy SQL-Sensi using Docker Compose, follow these steps:
 > 🐧 Linux Binary: [sql.sensi](https://github.com/Advik-B/SQL-Sensi/releases/latest/download/sql.sensi)
 >
 > 🗜️ Linux Binary (7-Zipped): [sql.sensi.7z](https://github.com/Advik-B/SQL-Sensi/releases/latest/download/sql.sensi.7z)
+
+## Build and run
 
 ### Prerequisites
 - Go compiler installed
