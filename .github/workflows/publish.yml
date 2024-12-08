@@ -2,14 +2,10 @@ name: Publish Docker Image
 
 on:
   push:
+    branches:
+      - main
     tags:
       - '*'
-  workflow_dispatch:
-    inputs:
-      image_tag:
-        description: 'Tag for the Docker image'
-        required: true
-        default: 'dev'
 
 jobs:
   build-and-push:
@@ -29,8 +25,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - id: determine-tag
-        run: echo "tag=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.image_tag || github.ref_name }}" >> $GITHUB_OUTPUT
+      - name: Set image tag
+        id: set-tag
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "tag=dev" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -38,4 +39,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ needs.determine-tag.outputs.tag }}
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ steps.set-tag.outputs.tag }}
