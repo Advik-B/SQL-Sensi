@@ -40,4 +40,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ steps.set-tag.outputs.tag }}
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ steps.set-tag.outputs.tag }}
