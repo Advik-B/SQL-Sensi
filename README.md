@@ -32,13 +32,32 @@ Here's what SQL-Sensi currently offers and what's coming soon:
 
 SQL-Sensi is also available as a [![Docker Image](https://img.shields.io/badge/Docker_Image-%20?logo=Docker&logoSize=auto&color=white)](https://github.com/Advik-B/SQL-Sensi/pkgs/container/sql-sensi)
 
+## Deploy with Docker Compose
+
+To deploy SQL-Sensi using Docker Compose, follow these steps:
+
+1. Create a `.env` file in the root directory of your project and add the required environment variables:
+
+    ```env
+    DB_HOST=your_database_host
+    DB_USER=your_database_user
+    DB_PASS=your_database_password
+    TELEGRAM_API_KEY=your_telegram_api_key
+    GEMINI_API_KEY=your_gemini_api_key
+    ```
+
+2. Run the following command to start the services:
+
+    ```sh
+    docker-compose up -d
+    ```
 
 ## Build and run
 
 ### Direct download
 
 > [!NOTE]
->📍You can directly download the linux binary from [releases](https://github.com/Advik-B/SQL-Sensi/releases/latest)
+>���You can directly download the linux binary from [releases](https://github.com/Advik-B/SQL-Sensi/releases/latest)
 >
 > 🐧 Linux Binary: [sql.sensi](https://github.com/Advik-B/SQL-Sensi/releases/latest/download/sql.sensi)
 >

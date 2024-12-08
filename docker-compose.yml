@@ -1,0 +1,16 @@
+
+version: '3.8'
+
+services:
+  sql-sensi:
+    image: ghcr.io/advik-b/sql-sensi:latest
+    container_name: sql-sensi
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
