@@ -1,10 +1,10 @@
 # SQL-Sensi
-![Static Badge](https://img.shields.io/badge/Docker_Image-%20?style=for-the-badge&logo=Docker&logoSize=auto&color=white)
-![Static Badge](https://img.shields.io/badge/written%20in-go-%20?style=for-the-badge&logoColor=white&logoSize=auto&color=%2300ADD8)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Advik-B/SQL-Sensi/total?style=for-the-badge&label=Total%20downloads&color=violet&link=https%3A%2F%2Fgithub.com%2FAdvik-B%2FSQL-Sensi%2Freleases)
-![GitHub commits since latest release](https://img.shields.io/github/commits-since/Advik-B/SQL-Sensi/latest?include_prereleases&style=for-the-badge)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Advik-B/SQL-Sensi/publish.yml?branch=main&style=for-the-badge)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Advik-B/SQL-Sensi?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/Docker_Image-%20?logo=Docker&logoSize=auto&color=white)
+![Static Badge](https://img.shields.io/badge/written%20in-go-%20?logoColor=white&logoSize=auto&color=%2300ADD8)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Advik-B/SQL-Sensi/total?label=total%20downloads&color=violet&link=https%3A%2F%2Fgithub.com%2FAdvik-B%2FSQL-Sensi%2Freleases)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/Advik-B/SQL-Sensi/latest?include_prereleases&)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Advik-B/SQL-Sensi/publish.yml?branch=main&)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Advik-B/SQL-Sensi)
 
 
 SQL-Sensi is a Telegram bot designed to help users learn and practice MySQL. It provides an interactive platform where users can connect to a database, execute SQL commands, and share tables with other users. The bot also offers sample tables and data to help users get started quickly.
