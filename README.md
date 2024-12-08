@@ -28,6 +28,11 @@ Here's what SQL-Sensi currently offers and what's coming soon:
 - **Custom Datasets**: Import your own datasets for practice
 - **Interactive Tutorials**: Step-by-step SQL learning modules with hands-on exercises
 
+## Deploy
+
+SQL-Sensi is also available as a [![Docker Image](https://img.shields.io/badge/Docker_Image-%20?logo=Docker&logoSize=auto&color=white)](https://github.com/Advik-B/SQL-Sensi/pkgs/container/sql-sensi)
+
+
 ## Build and run
 
 ### Direct download
