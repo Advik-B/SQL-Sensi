@@ -42,4 +42,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ steps.set-tag.outputs.repo_owner }}/${{ steps.set-tag.outputs.repo_name }}:${{ steps.set-tag.outputs.tag }}
+          tags: |
+            ghcr.io/${{ steps.set-tag.outputs.repo_owner }}/${{ steps.set-tag.outputs.repo_name }}:${{ steps.set-tag.outputs.tag }}
+            ghcr.io/${{ steps.set-tag.outputs.repo_owner }}/${{ steps.set-tag.outputs.repo_name }}:latest
