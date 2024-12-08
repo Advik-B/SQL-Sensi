@@ -36,7 +36,9 @@ SQL-Sensi is also available as a [![Docker Image](https://img.shields.io/badge/D
 
 To deploy SQL-Sensi using Docker Compose, follow these steps:
 
-1. Create a `.env` file in the root directory of your project and add the required environment variables:
+1. Download [docker-compose.yml](https://raw.githubusercontent.com/Advik-B/SQL-Sensi/refs/heads/main/docker-compose.yml) to a folder and `cd` into it
+
+2. Create a `.env` file in the same folder and add the required environment variables:
 
     ```env
     DB_HOST=your_database_host
@@ -46,7 +48,7 @@ To deploy SQL-Sensi using Docker Compose, follow these steps:
     GEMINI_API_KEY=your_gemini_api_key
     ```
 
-2. Run the following command to start the services:
+3. Run the following command to start the services:
 
     ```sh
     docker-compose up -d
