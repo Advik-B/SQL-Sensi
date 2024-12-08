@@ -14,4 +14,6 @@ FROM gcr.io/distroless/static-debian12
 
 COPY --from=build /app/bot /app/bot
 
+EXPOSE 3306
+
 CMD ["/app/bot"]
