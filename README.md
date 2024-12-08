@@ -42,7 +42,7 @@ To deploy SQL-Sensi using Docker Compose, follow these steps:
     DB_HOST=your_database_host
     DB_USER=your_database_user
     DB_PASS=your_database_password
-    TELEGRAM_API_KEY=your_telegram_api_key
+    TELEGRAM_TOKEN=your_telegram_api_key
     GEMINI_API_KEY=your_gemini_api_key
     ```
 
