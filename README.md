@@ -9,6 +9,15 @@
 
 SQL-Sensi is a Telegram bot designed to help users learn and practice MySQL. It provides an interactive platform where users can connect to a database, execute SQL commands, and share tables with other users. The bot also offers sample tables and data to help users get started quickly.
 
+## Usage:
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/0e898325-39d0-4e14-9197-ed1bc6d0a867" alt="QR Code for the Telegram Bot" width="400"/>
+<!--   <hr> -->
+  
+  <span>Just add the bot [@SQLsensei_bot](https://t.me/SQLsensei_bot)</span>
+</div>
+
+
 ## Features
 Here's what SQL-Sensi currently offers and what's coming soon:
 
