@@ -1,6 +1,3 @@
-
-version: '3.8'
-
 services:
   sql-sensi:
     image: ghcr.io/advik-b/sql-sensi:latest
