@@ -33,7 +33,7 @@ jobs:
           else
             echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
-          echo "repo_name=$(echo '${{ github.repository }}' | cut -d'/' -f2 | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+          echo "repo_name=$(echo '${{ github.repository }}' | cut -d'/' -f2 | python -c "import sys; print(sys.stdin.read().strip().lower())")" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
