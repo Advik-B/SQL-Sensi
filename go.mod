@@ -47,6 +47,6 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
-	golang.org/x/crypto v0.30.0
+	golang.org/x/crypto v0.31.0
 	google.golang.org/api v0.210.0
 )
