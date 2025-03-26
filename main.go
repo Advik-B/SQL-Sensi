@@ -4,11 +4,11 @@ import (
 	"log"
 	"os"
 
-	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	env "github.com/joho/godotenv"
 	"github.com/Advik-B/SQL-Sensi/commands"
 	"github.com/Advik-B/SQL-Sensi/database"
 	"github.com/Advik-B/SQL-Sensi/management"
+	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	env "github.com/joho/godotenv"
 )
 
 func main() {
