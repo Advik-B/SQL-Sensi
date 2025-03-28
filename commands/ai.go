@@ -5,53 +5,16 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/Advik-B/SQL-Sensi/management"
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/generative-ai-go/genai"
-	"github.com/russross/blackfriday/v2"
-	"google.golang.org/api/option"
 	tgmd "github.com/zavitkov/tg-markdown"
+	"google.golang.org/api/option"
 )
 
 var sessions = NewSessionManager()
-
-// Escape Telegram MarkdownV2 special characters
-func escapeTelegramMarkdownV2(text string) string {
-	charsToEscape := `_*[]()~>#+-=|{}.!`
-	var escaped strings.Builder
-	for _, char := range text {
-		if strings.ContainsRune(charsToEscape, char) {
-			escaped.WriteString("\\" + string(char))
-		} else {
-			escaped.WriteRune(char)
-		}
-	}
-	return escaped.String()
-}
-
-// Convert Markdown to Telegram MarkdownV2
-func markdownToTelegramMarkdownV2(md string) string {
-	// Convert Markdown to HTML (intermediate step)
-	html := blackfriday.Run([]byte(md))
-
-	// Convert HTML to plain text
-	text := string(html)
-
-	// Convert Markdown syntax to Telegram MarkdownV2
-	text = regexp.MustCompile(`\*\*(.*?)\*\*`).ReplaceAllString(text, "*$1*")          // Bold
-	text = regexp.MustCompile(`\*(.*?)\*`).ReplaceAllString(text, "_$1_")              // Italics
-	text = regexp.MustCompile("`([^`]+)`").ReplaceAllString(text, "`$1`")              // Inline Code
-	text = regexp.MustCompile("(?s)```(.*?)```").ReplaceAllString(text, "```$1```")    // Code Blocks
-	text = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`).ReplaceAllString(text, "[$1]($2)") // Links
-
-	// Escape Telegram special characters
-	text = escapeTelegramMarkdownV2(text)
-
-	return text
-}
 
 func responseToString(resp *genai.GenerateContentResponse) string {
 	var str string
