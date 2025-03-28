@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"fmt"
-	tgmd "github.com/zavitkov/tg-markdown"
 	"log"
 	"os"
 	"regexp"
@@ -14,6 +13,7 @@ import (
 	"github.com/google/generative-ai-go/genai"
 	"github.com/russross/blackfriday/v2"
 	"google.golang.org/api/option"
+	tgmd "github.com/zavitkov/tg-markdown"
 )
 
 var sessions = NewSessionManager()
@@ -126,7 +126,7 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 
 	// Send the response
 	msg := telegram.NewMessage(message.Chat.ID, "")
-	msg.Text = markdownToTelegramMarkdownV2(responseToString(res))
+	msg.Text = tgmd.ConvertMarkdownToTelegramMarkdownV2(responseToString(res))
 	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
 
@@ -190,15 +190,6 @@ func cancelClearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery)
 	// Do nothing
 }
 
-func escapeMarkdownV2(text string) string {
-	// Define the list of special characters in MarkdownV2
-	specialChars := "_*[]()~`>#+-=|{}.!"
-	for _, char := range specialChars {
-		text = strings.ReplaceAll(text, string(char), "\\"+string(char))
-	}
-	return text
-}
-
 func init() {
 	Register(
 		Command{
@@ -236,14 +227,4 @@ func init() {
 			Handler: cancelClearAPICallback,
 		},
 	)
-	Register(
-		Command{
-			Name:        "markdown_test",
-			Description: "Test the markdown parser",
-			Handler: func(bot *telegram.BotAPI, message *telegram.Message) {
-				msg := telegram.NewMessage(message.Chat.ID, tgmd.ConvertMarkdownToTelegramMarkdownV2(message.CommandArguments()))
-				msg.ParseMode = "MarkdownV2"
-				bot.Send(msg)
-			},
-		})
 }
