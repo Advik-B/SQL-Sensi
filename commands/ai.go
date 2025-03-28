@@ -3,17 +3,55 @@ package commands
 import (
 	"context"
 	"fmt"
+	tgmd "github.com/zavitkov/tg-markdown"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 
+	"github.com/Advik-B/SQL-Sensi/management"
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/generative-ai-go/genai"
+	"github.com/russross/blackfriday/v2"
 	"google.golang.org/api/option"
-	"github.com/Advik-B/SQL-Sensi/management"
 )
 
 var sessions = NewSessionManager()
+
+// Escape Telegram MarkdownV2 special characters
+func escapeTelegramMarkdownV2(text string) string {
+	charsToEscape := `_*[]()~>#+-=|{}.!`
+	var escaped strings.Builder
+	for _, char := range text {
+		if strings.ContainsRune(charsToEscape, char) {
+			escaped.WriteString("\\" + string(char))
+		} else {
+			escaped.WriteRune(char)
+		}
+	}
+	return escaped.String()
+}
+
+// Convert Markdown to Telegram MarkdownV2
+func markdownToTelegramMarkdownV2(md string) string {
+	// Convert Markdown to HTML (intermediate step)
+	html := blackfriday.Run([]byte(md))
+
+	// Convert HTML to plain text
+	text := string(html)
+
+	// Convert Markdown syntax to Telegram MarkdownV2
+	text = regexp.MustCompile(`\*\*(.*?)\*\*`).ReplaceAllString(text, "*$1*")          // Bold
+	text = regexp.MustCompile(`\*(.*?)\*`).ReplaceAllString(text, "_$1_")              // Italics
+	text = regexp.MustCompile("`([^`]+)`").ReplaceAllString(text, "`$1`")              // Inline Code
+	text = regexp.MustCompile("(?s)```(.*?)```").ReplaceAllString(text, "```$1```")    // Code Blocks
+	text = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`).ReplaceAllString(text, "[$1]($2)") // Links
+
+	// Escape Telegram special characters
+	text = escapeTelegramMarkdownV2(text)
+
+	return text
+}
 
 func responseToString(resp *genai.GenerateContentResponse) string {
 	var str string
@@ -88,8 +126,8 @@ func ai(bot *telegram.BotAPI, message *telegram.Message) {
 
 	// Send the response
 	msg := telegram.NewMessage(message.Chat.ID, "")
-	msg.Text = responseToString(res)
-	// msg.ParseMode = "Markdown"
+	msg.Text = markdownToTelegramMarkdownV2(responseToString(res))
+	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
 
 	// Update session history
@@ -152,36 +190,13 @@ func cancelClearAPICallback(bot *telegram.BotAPI, query *telegram.CallbackQuery)
 	// Do nothing
 }
 
-func parseMarkDown(text string) string {
-	var result strings.Builder
-	inCode := false
-
-	for i := 0; i < len(text); i++ {
-		ch := text[i]
-		switch ch {
-		case '`':
-			if inCode {
-				result.WriteString("\\`")
-			} else {
-				result.WriteString("`")
-			}
-			inCode = !inCode
-		case '\\', '_', '*', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!':
-			if inCode {
-				if ch == '\\' {
-					result.WriteString("\\\\")
-				} else {
-					result.WriteByte(ch)
-				}
-			} else {
-				result.WriteByte('\\')
-				result.WriteByte(ch)
-			}
-		default:
-			result.WriteByte(ch)
-		}
+func escapeMarkdownV2(text string) string {
+	// Define the list of special characters in MarkdownV2
+	specialChars := "_*[]()~`>#+-=|{}.!"
+	for _, char := range specialChars {
+		text = strings.ReplaceAll(text, string(char), "\\"+string(char))
 	}
-	return result.String()
+	return text
 }
 
 func init() {
@@ -221,4 +236,14 @@ func init() {
 			Handler: cancelClearAPICallback,
 		},
 	)
+	Register(
+		Command{
+			Name:        "markdown_test",
+			Description: "Test the markdown parser",
+			Handler: func(bot *telegram.BotAPI, message *telegram.Message) {
+				msg := telegram.NewMessage(message.Chat.ID, tgmd.ConvertMarkdownToTelegramMarkdownV2(message.CommandArguments()))
+				msg.ParseMode = "MarkdownV2"
+				bot.Send(msg)
+			},
+		})
 }
