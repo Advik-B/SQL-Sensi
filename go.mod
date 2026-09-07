@@ -3,7 +3,7 @@ module github.com/Advik-B/SQL-Sensi
 go 1.25.0
 
 require (
-	github.com/go-sql-driver/mysql v1.9.0
+	github.com/go-sql-driver/mysql v1.10.1
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/google/generative-ai-go v0.19.0
 	github.com/joho/godotenv v1.5.1
@@ -46,7 +46,7 @@ require (
 )
 
 require (
-	filippo.io/edwards25519 v1.1.1 // indirect
+	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
 	golang.org/x/crypto v0.52.0
 	google.golang.org/api v0.230.0
